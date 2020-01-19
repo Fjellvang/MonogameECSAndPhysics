@@ -19,8 +19,8 @@ namespace MyGame
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 1200;
-            _graphics.PreferredBackBufferHeight = 1200;
+            _graphics.PreferredBackBufferWidth = 400;
+            _graphics.PreferredBackBufferHeight = 400;
             Content.RootDirectory = "Content";
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
@@ -32,11 +32,16 @@ namespace MyGame
             // TODO: Add your initialization logic here
 
             gameManager.AddSystem(new SpriteRendererSystem(gameManager, this));
+            gameManager.AddSystem(new PlayerInputSystem(gameManager));
             gameManager.Initialize();
 
-            Entity test = new Entity(gameManager);
-            new TransformComponent(test, Vector2.Zero);
-            new SpriteComponent(test, "Man");
+            Entity player = new Entity(gameManager);
+            new TransformComponent(player, Vector2.Zero);
+            new SpriteComponent(player, "Man",0.5f,new Vector2(0.5f,0.5f), new Rectangle(586/3,586/4, 200,400));
+            new PlayerInputComponent(player);
+            var background = new Entity(gameManager);
+            new SpriteComponent(background, "stars",0);
+
 
             base.Initialize();
         }
@@ -60,7 +65,7 @@ namespace MyGame
                 Exit();
 
             // TODO: Add your update logic here
-            
+            gameManager.Update(gameTime);
             //
 
             base.Update(gameTime);

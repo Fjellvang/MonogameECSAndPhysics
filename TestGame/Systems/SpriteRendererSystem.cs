@@ -24,20 +24,21 @@ namespace MyGame.TestGame.Systems
             //Not sure if needed
             game.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.FrontToBack);
             for (int i = 0; i < SpriteComponent.Instances.Count; i++)
             {
                 var sprite = SpriteComponent.Instances[i];
                 //TODO: Do we want to do it like this!??
-                var transform = sprite.Entity.GetComponent<TransformComponent>();
+                var transform = sprite.Entity.GetComponent<TransformComponent>()?.Position ?? Vector2.Zero;
 
+                //Int32[] pixel = { 0xFFFFFF };
 
                 var texture = TextureDictionary[sprite.TextureName];
-                spriteBatch.Draw(texture, position: transform.Position,
+                spriteBatch.Draw(texture, position: transform,
                     sourceRectangle: sprite.SourceRectangle,
                     color: sprite.Color, 
                     rotation: sprite.Rotation,
-                    origin: transform.Position,//TODO: CHECK THIS,
+                    origin: transform,//TODO: CHECK THIS,
                     scale: sprite.Scale,
                     effects: sprite.SpriteEffects,
                     layerDepth: sprite.Layer
@@ -53,6 +54,7 @@ namespace MyGame.TestGame.Systems
             this.spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
             TextureDictionary.Add("Man", content.Load<Texture2D>("character1_without_arm"));
+            TextureDictionary.Add("stars", content.Load<Texture2D>("stars"));
         }
 
         public override void Update(GameTime gameTime)
