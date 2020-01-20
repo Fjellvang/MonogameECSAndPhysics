@@ -22,7 +22,7 @@ namespace MyGame.TestGame.Systems
         public override void Draw()
         {
             //Not sure if needed
-            game.GraphicsDevice.Clear(Color.CornflowerBlue);
+            game.GraphicsDevice.Clear(Color.AntiqueWhite);
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack);
             for (int i = 0; i < SpriteComponent.Instances.Count; i++)
@@ -34,11 +34,13 @@ namespace MyGame.TestGame.Systems
                 //Int32[] pixel = { 0xFFFFFF };
 
                 var texture = TextureDictionary[sprite.TextureName];
+                sprite.SourceRectangle = sprite.SourceRectangle ?? new Rectangle(0, 0, texture.Width, texture.Height);
+
                 spriteBatch.Draw(texture, position: transform,
                     sourceRectangle: sprite.SourceRectangle,
-                    color: sprite.Color, 
+                    color: sprite.Color,
                     rotation: sprite.Rotation,
-                    origin: transform,//TODO: CHECK THIS,
+                    origin: new Vector2(sprite.SourceRectangle.Value.Width/2, sprite.SourceRectangle.Value.Height/2),
                     scale: sprite.Scale,
                     effects: sprite.SpriteEffects,
                     layerDepth: sprite.Layer
@@ -55,6 +57,8 @@ namespace MyGame.TestGame.Systems
 
             TextureDictionary.Add("Man", content.Load<Texture2D>("character1_without_arm"));
             TextureDictionary.Add("stars", content.Load<Texture2D>("stars"));
+            TextureDictionary.Add("white", content.Load<Texture2D>("white"));
+            TextureDictionary.Add("ball", content.Load<Texture2D>("circle-128"));
         }
 
         public override void Update(GameTime gameTime)

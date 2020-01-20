@@ -19,8 +19,8 @@ namespace MyGame
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 400;
-            _graphics.PreferredBackBufferHeight = 400;
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 1024;
             Content.RootDirectory = "Content";
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
@@ -33,15 +33,24 @@ namespace MyGame
 
             gameManager.AddSystem(new SpriteRendererSystem(gameManager, this));
             gameManager.AddSystem(new PlayerInputSystem(gameManager));
+            gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight)));
             gameManager.Initialize();
 
             Entity player = new Entity(gameManager);
-            new TransformComponent(player, Vector2.Zero);
-            new SpriteComponent(player, "Man",0.5f,new Vector2(0.5f,0.5f), new Rectangle(586/3,586/4, 200,400));
+            var playerRect = new Rectangle(586 / 3, 586 / 4, 200, 400);
+            var playerSpawn = new Vector2(200, 1024 - playerRect.Height);
+            new TransformComponent(player, playerSpawn);
+            new SpriteComponent(player, "Man",0.5f,Color.White,new Vector2(0.5f,0.5f), 0, SpriteEffects.None, playerRect);
             new PlayerInputComponent(player);
-            var background = new Entity(gameManager);
-            new SpriteComponent(background, "stars",0);
+            new BoxColliderComponent(player, new Rectangle((int)playerSpawn.X, (int)playerSpawn.Y, playerRect.Width, playerRect.Height));
+            new SimpleRigidbodyComponent(player);
+            //var background = new Entity(gameManager);
+            //new SpriteComponent(background, "stars",0, new Vector2(2,2));
 
+            var ball = new Entity(gameManager);
+            new SpriteComponent(ball, "ball",0,Vector2.One*0.5f);
+            new BoxColliderComponent(ball, new Rectangle(0, 0, 68, 68));
+            new SimpleRigidbodyComponent(ball);
 
             base.Initialize();
         }

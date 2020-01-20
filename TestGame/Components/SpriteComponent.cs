@@ -32,7 +32,8 @@ namespace MyGame.TestGame.Components
         public SpriteComponent(IEntity entity, string textureName, float layer) : this(entity, textureName, layer, Color.White, new Vector2(1, 1), 0, SpriteEffects.None, null) { }
         public SpriteComponent(IEntity entity, string textureName, Rectangle sourceRectangle) : this(entity, textureName, 0, Color.White, new Vector2(1, 1), 0, SpriteEffects.None, sourceRectangle) { }
         public SpriteComponent(IEntity entity, string textureName, float layer, Rectangle sourceRectangle) : this(entity, textureName, layer, Color.White, new Vector2(1, 1), 0, SpriteEffects.None, sourceRectangle) { }
-        public SpriteComponent(IEntity entity, string textureName, float layer,Vector2 scale, Rectangle sourceRectangle) : this(entity, textureName, layer, Color.White, scale, 0, SpriteEffects.None, sourceRectangle) { }
+        public SpriteComponent(IEntity entity, string textureName, float layer, Vector2 scale) : this(entity, textureName, layer, Color.White, scale, 0, SpriteEffects.None, null) { }
+        public SpriteComponent(IEntity entity, string textureName, float layer, Vector2 scale, Rectangle sourceRectangle) : this(entity, textureName, layer, Color.White, scale, 0, SpriteEffects.None, sourceRectangle) { }
             
     }
 }

@@ -10,7 +10,7 @@ namespace MyGame.TestGame.Systems
 {
     public class PlayerInputSystem : BaseSystem
     {
-        float speed = 1000f;
+        float speed = 1f;
         public PlayerInputSystem(IManager manager) : base(manager)
         {
         }
@@ -26,16 +26,16 @@ namespace MyGame.TestGame.Systems
             for (int i = 0;i< PlayerInputComponent.Instances.Count; i++)
             {
                 var comp = PlayerInputComponent.Instances[i];
-                var transform = comp.Entity.GetComponent<TransformComponent>();
+                var transform = comp.Entity.GetComponent<SimpleRigidbodyComponent>();
                 var state = Keyboard.GetState();
 
                 if (state.IsKeyDown(Keys.A))
                 {
-                    transform.Position -= Vector2.UnitX * (speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    transform.Acceleration = Vector2.UnitX * (speed);
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
-                    transform.Position += Vector2.UnitX * (speed * (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    transform.Acceleration = -Vector2.UnitX * (speed);
                 }
 
             }
