@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework;
 using MyGame.ECS.Components;
 using MyGame.ECS.Systems;
 
@@ -8,10 +9,13 @@ namespace MyGame.ECS.Entities
 {
     public class Entity : IEntity
     {
-        public Entity(IManager manager)
+        public Vector3 Position { get; set; } //TODO: In the future this could be a matrix with pos, scale and rot ?..
+        public Entity(IManager manager, Vector3 position)
         {
             this.manager = manager;
+            this.Position = position;   
             this.manager.AddEntity(this);
+
         }
         private readonly IManager manager;
         private readonly List<IComponent> components = new List<IComponent>();

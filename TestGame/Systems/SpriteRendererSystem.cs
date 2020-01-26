@@ -29,9 +29,9 @@ namespace MyGame.TestGame.Systems
             {
                 var sprite = SpriteComponent.Instances[i];
                 //TODO: Do we want to do it like this!??
-                var transform = sprite.Entity.GetComponent<TransformComponent>()?.Position ?? Vector3.Zero;
+                //var transform = sprite.Entity.GetComponent<TransformComponent>()?.Position ?? Vector3.Zero;
                 //Quick fix...
-                var trans2d = new Vector2(transform.X, transform.Y);
+                var trans2d = new Vector2(sprite.Entity.Position.X, sprite.Entity.Position.Y);
 
                 //Int32[] pixel = { 0xFFFFFF };
 

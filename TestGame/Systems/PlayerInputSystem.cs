@@ -30,7 +30,7 @@ namespace MyGame.TestGame.Systems
             for (int i = 0;i< PlayerInputComponent.Instances.Count; i++)
             {
                 var comp = PlayerInputComponent.Instances[i];
-                var transform = comp.Entity.GetComponent<TransformComponent>();
+                //var transform = comp.Entity.GetComponent<TransformComponent>();
                 var state = Keyboard.GetState();
 
                 if (state.IsKeyDown(Keys.LeftShift))
@@ -43,19 +43,19 @@ namespace MyGame.TestGame.Systems
 
                 if (state.IsKeyDown(Keys.A))
                 {
-                    transform.Position -= new Vector3(0.1f, 0, 0) * speed;
+                    comp.Entity.Position -= new Vector3(0.1f, 0, 0) * speed;
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
-                    transform.Position += new Vector3(0.1f, 0, 0) * speed;
+                    comp.Entity.Position += new Vector3(0.1f, 0, 0) * speed;
                 }
                 if (state.IsKeyDown(Keys.S))
                 {
-                    transform.Position += new Vector3(0, 0.1f, 0) * speed;
+                    comp.Entity.Position += new Vector3(0, 0.1f, 0) * speed;
                 }
                 if (state.IsKeyDown(Keys.W))
                 {
-                    transform.Position -= new Vector3(0, 0.1f, 0) * speed;
+                    comp.Entity.Position -= new Vector3(0, 0.1f, 0) * speed;
                 }
 
 

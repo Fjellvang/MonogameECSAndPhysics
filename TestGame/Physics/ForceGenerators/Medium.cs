@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyGame.TestGame.Components;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,7 +19,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
         /// drag force = -drag coefficient * object velocity
         /// </summary>
         /// <param name="simulationObject"></param>
-        public void ApplyForce(SimulationObject simulationObject)
+        public void ApplyForce(RigidBodyComponent simulationObject)
         {
             simulationObject.ResultantForce += -DragCoefficient * simulationObject.CurrentVelocity;
         }

@@ -23,7 +23,7 @@ namespace MyGame.TestGame.Systems
 
         public override void Initialize()
         {
-            forceGenerators.Add(new Gravity());
+            forceGenerators.Add(new Gravity(18));
             forceGenerators.Add(new Medium(0.1f));
         }
 
@@ -36,12 +36,12 @@ namespace MyGame.TestGame.Systems
                 spring.ApplyForce(null); // passes null, as spring stores reference internally...
             }
 
-            for (int i = 0; i < SimpleRigidbodyComponent.Instances.Count; i++)
+            for (int i = 0; i < RigidBodyComponent.Instances.Count; i++)
             {
-                var rig = SimpleRigidbodyComponent.Instances[i];
-                var transform = rig.Entity.GetComponent<TransformComponent>();
+                var rig = RigidBodyComponent.Instances[i];
+                //var transform = rig.Entity.GetComponent<TransformComponent>();
 
-                if (rig.SimulationObject.ObjectType != Physics.SimulationObjectType.Active)
+                if (rig.ObjectType != SimulationObjectType.Active)
                 {
                     continue;
                 }
@@ -49,21 +49,23 @@ namespace MyGame.TestGame.Systems
                 //applyforces like gravity and drag etc
                 for (int j = 0; j < forceGenerators.Count; j++)
                 {
-                    forceGenerators[j].ApplyForce(rig.SimulationObject);
+                    forceGenerators[j].ApplyForce(rig);
                 }
 
                 //find acceleration
                 //todo: maybe this needs another loop ????
-                var accleration = rig.SimulationObject.ResultantForce / rig.SimulationObject.Mass; //Todo, get a prop for this ?
+                var accleration = rig.ResultantForce / rig.Mass; //Todo, get a prop for this ?
 
-                Integrator.Integrate(accleration, rig.SimulationObject);
+                Integrator.Integrate(accleration, rig);
 
+                rig.ResetForces();
                 //TODO: will these two lines end up being identical ???
-                rig.SimulationObject.Update(gameTime);
-                transform.Position = rig.SimulationObject.CurrentPosition;
+                //rig.Update(gameTime);
+
+                //rig.Entity.Position = rig.SimulationObject.CurrentPosition;
+                //rig.SimulationObject.CurrentPosition = rig.Entity.Position;
 
                 //Reset forces on the object..
-                rig.SimulationObject.ResetForces();
             }
         }
     }

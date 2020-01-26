@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MyGame.TestGame.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,16 +23,16 @@ namespace MyGame.TestGame.Physics.ForceGenerators
         /// <summary>
         /// First of the two connected objects
         /// </summary>
-        public SimulationObject SimulationObjectA { get; set; }
+        public RigidBodyComponent SimulationObjectA { get; set; }
         /// <summary>
         /// The other connected object
         /// </summary>
-        public SimulationObject SimulationObjectB { get; set; }
-        public Spring(float stiffness, float damping, SimulationObject objA, SimulationObject objB) : this(stiffness, damping, objA, objB, (objB.CurrentPosition - objA.CurrentPosition).Length())
+        public RigidBodyComponent SimulationObjectB { get; set; }
+        public Spring(float stiffness, float damping, RigidBodyComponent objA, RigidBodyComponent objB) : this(stiffness, damping, objA, objB, (objB.Entity.Position - objA.Entity.Position).Length())
         {
 
         }
-        public Spring(float stiffness, float damping, SimulationObject objA, SimulationObject objB, float restLength)
+        public Spring(float stiffness, float damping, RigidBodyComponent objA, RigidBodyComponent objB, float restLength)
         {
             Stiffness = stiffness;
             Damping = damping;
@@ -41,9 +42,9 @@ namespace MyGame.TestGame.Physics.ForceGenerators
         }
         //Vector3 direction;
 
-        public void ApplyForce(SimulationObject simulationObject)
+        public void ApplyForce(RigidBodyComponent simulationObject)
         {
-            var direction = SimulationObjectA.CurrentPosition - SimulationObjectB.CurrentPosition;
+            var direction = SimulationObjectA.Entity.Position - SimulationObjectB.Entity.Position;
             if (direction != Vector3.Zero)
             {
                 var currentLength = direction.Length();

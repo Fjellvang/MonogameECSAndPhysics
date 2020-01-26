@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
+using MyGame.TestGame.Components;
 
 namespace MyGame.TestGame.Physics.Integrators
 {
@@ -11,9 +12,9 @@ namespace MyGame.TestGame.Physics.Integrators
         {
         }
 
-        public override void Integrate(Vector3 acceleration, SimulationObject simulationObject)
+        public override void Integrate(Vector3 acceleration, RigidBodyComponent simulationObject)
         {
-            simulationObject.CurrentPosition += simulationObject.CurrentVelocity * FixedTimeStep;
+            simulationObject.Entity.Position += simulationObject.CurrentVelocity * FixedTimeStep;
             simulationObject.CurrentVelocity += acceleration * FixedTimeStep;
         }
     }

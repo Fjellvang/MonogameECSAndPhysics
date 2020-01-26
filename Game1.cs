@@ -5,7 +5,7 @@ using MyGame.ECS.Components;
 using MyGame.ECS.Entities;
 using MyGame.ECS.Systems;
 using MyGame.TestGame.Components;
-using MyGame.TestGame.Physics;
+//using MyGame.TestGame.Physics;
 using MyGame.TestGame.Physics.Integrators;
 using MyGame.TestGame.Systems;
 
@@ -49,20 +49,20 @@ namespace MyGame
             //var background = new Entity(gameManager);
             //new SpriteComponent(background, "stars",0, new Vector2(2,2));
 
-            var StationaryBall = new Entity(gameManager);
+            var StationaryBall = new Entity(gameManager, new Vector3(_graphics.PreferredBackBufferWidth / 3, _graphics.PreferredBackBufferHeight / 2, 0));
             new SpriteComponent(StationaryBall, "ball",0,Color.Red,Vector2.One*0.5f);
-            new TransformComponent(StationaryBall, new Vector3(_graphics.PreferredBackBufferWidth / 3, _graphics.PreferredBackBufferHeight / 2, 0));
-            new SimpleRigidbodyComponent(StationaryBall, new SimulationModel(1000, SimulationObjectType.Passive));
+            //new TransformComponent(StationaryBall, new Vector3(_graphics.PreferredBackBufferWidth / 3, _graphics.PreferredBackBufferHeight / 2, 0));
+            new RigidBodyComponent(StationaryBall,1, SimulationObjectType.Passive);
             new BoxColliderComponent(StationaryBall, new Rectangle(0, 0, 68, 68));
             new PlayerInputComponent(StationaryBall);
 
-            var MovingBall = new Entity(gameManager);
+            var MovingBall = new Entity(gameManager, new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 4, 0));
             new SpriteComponent(MovingBall, "ball",0,Color.Red,Vector2.One*1f);
-            new TransformComponent(MovingBall, new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 4, 0));
+            //new TransformComponent(MovingBall, new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 4, 0));
             new BoxColliderComponent(MovingBall, new Rectangle(0, 0, 68, 68));
-            new SimpleRigidbodyComponent(MovingBall, new SimulationModel(5f, SimulationObjectType.Active));
+            new RigidBodyComponent(MovingBall, 5f, SimulationObjectType.Active);
 
-            new SpringComponent(0.5f, 0.5f, StationaryBall, MovingBall);
+            new SpringComponent(8, 0.1f, StationaryBall, MovingBall);
             //new SimpleRigidbodyComponent(ball);
 
             base.Initialize();

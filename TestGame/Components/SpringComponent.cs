@@ -10,15 +10,22 @@ namespace MyGame.TestGame.Components
     public class SpringComponent : BaseComponent<SpringComponent>
     {
         public Spring spring { get; set; }
-        public SpringComponent(float stiffness, float damping, IEntity entity, IEntity other) : base(entity)
+        public SpringComponent(float stiffness, float damping, IEntity entity, IEntity other, float? restLength = null) : base(entity)
         {
-            var rigA = entity.GetComponent<SimpleRigidbodyComponent>();
-            var rigB = other.GetComponent<SimpleRigidbodyComponent>();
+            var rigA = entity.GetComponent<RigidBodyComponent>();
+            var rigB = other.GetComponent<RigidBodyComponent>();
             if (rigA is null || rigB is null)
             {
                 throw new ArgumentNullException("a springs entities needs a rigidbody!");
             }
-            spring = new Spring(stiffness, damping, rigA.SimulationObject, rigB.SimulationObject);
+            if (restLength is null)
+            {
+                spring = new Spring(stiffness, damping, rigA, rigB);
+            }
+            else
+            {
+                spring = new Spring(stiffness, damping, rigA, rigB, restLength.Value);
+            }
         }
     }
 }

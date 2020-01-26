@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MyGame.TestGame.Components;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +19,6 @@ namespace MyGame.TestGame.Physics.Integrators
             this.FixedTimeStep = (float)game.TargetElapsedTime.TotalSeconds;
         }
 
-        public abstract void Integrate(Vector3 acceleration, SimulationObject simulationObject);
+        public abstract void Integrate(Vector3 acceleration, RigidBodyComponent simulationObject);
     }
 }
