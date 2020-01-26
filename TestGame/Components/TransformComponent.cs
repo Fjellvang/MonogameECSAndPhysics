@@ -9,8 +9,8 @@ namespace MyGame.TestGame.Components
 {
     public class TransformComponent : BaseComponent<TransformComponent>
     {
-        public Vector2 Position { get; set; }
-        public TransformComponent(IEntity entity, Vector2 position) : base(entity)
+        public Vector3 Position { get; set; }
+        public TransformComponent(IEntity entity, Vector3 position) : base(entity)
         {
             Position = position;
         }

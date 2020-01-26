@@ -10,13 +10,17 @@ namespace MyGame.TestGame.Systems
 {
     public class PlayerInputSystem : BaseSystem
     {
-        float speed = 1f;
+        float speed = 4f;
+        float origspeed;
+        KeyboardState oldState;
         public PlayerInputSystem(IManager manager) : base(manager)
         {
+            origspeed = speed;
         }
 
         public override void Initialize()
         {
+            oldState = Keyboard.GetState();
             base.Initialize();
         }
 
@@ -26,18 +30,36 @@ namespace MyGame.TestGame.Systems
             for (int i = 0;i< PlayerInputComponent.Instances.Count; i++)
             {
                 var comp = PlayerInputComponent.Instances[i];
-                var transform = comp.Entity.GetComponent<SimpleRigidbodyComponent>();
+                var transform = comp.Entity.GetComponent<TransformComponent>();
                 var state = Keyboard.GetState();
+
+                if (state.IsKeyDown(Keys.LeftShift))
+                {
+                    speed = 2 * origspeed;
+                }else
+                {
+                    speed = origspeed;
+                }
 
                 if (state.IsKeyDown(Keys.A))
                 {
-                    transform.Acceleration = Vector2.UnitX * (speed);
+                    transform.Position -= new Vector3(0.1f, 0, 0) * speed;
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
-                    transform.Acceleration = -Vector2.UnitX * (speed);
+                    transform.Position += new Vector3(0.1f, 0, 0) * speed;
+                }
+                if (state.IsKeyDown(Keys.S))
+                {
+                    transform.Position += new Vector3(0, 0.1f, 0) * speed;
+                }
+                if (state.IsKeyDown(Keys.W))
+                {
+                    transform.Position -= new Vector3(0, 0.1f, 0) * speed;
                 }
 
+
+                oldState = state;
             }
         }
     }

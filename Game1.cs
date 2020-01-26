@@ -5,6 +5,8 @@ using MyGame.ECS.Components;
 using MyGame.ECS.Entities;
 using MyGame.ECS.Systems;
 using MyGame.TestGame.Components;
+using MyGame.TestGame.Physics;
+using MyGame.TestGame.Physics.Integrators;
 using MyGame.TestGame.Systems;
 
 namespace MyGame
@@ -33,24 +35,35 @@ namespace MyGame
 
             gameManager.AddSystem(new SpriteRendererSystem(gameManager, this));
             gameManager.AddSystem(new PlayerInputSystem(gameManager));
-            gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight)));
+            gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), new ForwardEulerIntegrator(this)));
             gameManager.Initialize();
 
-            Entity player = new Entity(gameManager);
-            var playerRect = new Rectangle(586 / 3, 586 / 4, 200, 400);
-            var playerSpawn = new Vector2(200, 1024 - playerRect.Height);
-            new TransformComponent(player, playerSpawn);
-            new SpriteComponent(player, "Man",0.5f,Color.White,new Vector2(0.5f,0.5f), 0, SpriteEffects.None, playerRect);
-            new PlayerInputComponent(player);
-            new BoxColliderComponent(player, new Rectangle((int)playerSpawn.X, (int)playerSpawn.Y, playerRect.Width, playerRect.Height));
-            new SimpleRigidbodyComponent(player);
+            //Entity player = new Entity(gameManager);
+            //var playerRect = new Rectangle(586 / 3, 586 / 4, 200, 400);
+            //var playerSpawn = new Vector3(200, 1024 - playerRect.Height, 0);
+            //new TransformComponent(player, playerSpawn);
+            //new SpriteComponent(player, "Man",0.5f,Color.White,new Vector2(0.5f,0.5f), 0, SpriteEffects.None, playerRect);
+            //new PlayerInputComponent(player);
+            //new BoxColliderComponent(player, new Rectangle((int)playerSpawn.X, (int)playerSpawn.Y, playerRect.Width, playerRect.Height));
+            //new SimpleRigidbodyComponent(player);
             //var background = new Entity(gameManager);
             //new SpriteComponent(background, "stars",0, new Vector2(2,2));
 
-            var ball = new Entity(gameManager);
-            new SpriteComponent(ball, "ball",0,Vector2.One*0.5f);
-            new BoxColliderComponent(ball, new Rectangle(0, 0, 68, 68));
-            new SimpleRigidbodyComponent(ball);
+            var StationaryBall = new Entity(gameManager);
+            new SpriteComponent(StationaryBall, "ball",0,Color.Red,Vector2.One*0.5f);
+            new TransformComponent(StationaryBall, new Vector3(_graphics.PreferredBackBufferWidth / 3, _graphics.PreferredBackBufferHeight / 2, 0));
+            new SimpleRigidbodyComponent(StationaryBall, new SimulationModel(1000, SimulationObjectType.Passive));
+            new BoxColliderComponent(StationaryBall, new Rectangle(0, 0, 68, 68));
+            new PlayerInputComponent(StationaryBall);
+
+            var MovingBall = new Entity(gameManager);
+            new SpriteComponent(MovingBall, "ball",0,Color.Red,Vector2.One*1f);
+            new TransformComponent(MovingBall, new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 4, 0));
+            new BoxColliderComponent(MovingBall, new Rectangle(0, 0, 68, 68));
+            new SimpleRigidbodyComponent(MovingBall, new SimulationModel(5f, SimulationObjectType.Active));
+
+            new SpringComponent(0.5f, 0.5f, StationaryBall, MovingBall);
+            //new SimpleRigidbodyComponent(ball);
 
             base.Initialize();
         }

@@ -29,14 +29,16 @@ namespace MyGame.TestGame.Systems
             {
                 var sprite = SpriteComponent.Instances[i];
                 //TODO: Do we want to do it like this!??
-                var transform = sprite.Entity.GetComponent<TransformComponent>()?.Position ?? Vector2.Zero;
+                var transform = sprite.Entity.GetComponent<TransformComponent>()?.Position ?? Vector3.Zero;
+                //Quick fix...
+                var trans2d = new Vector2(transform.X, transform.Y);
 
                 //Int32[] pixel = { 0xFFFFFF };
 
                 var texture = TextureDictionary[sprite.TextureName];
                 sprite.SourceRectangle = sprite.SourceRectangle ?? new Rectangle(0, 0, texture.Width, texture.Height);
 
-                spriteBatch.Draw(texture, position: transform,
+                spriteBatch.Draw(texture, position: trans2d,
                     sourceRectangle: sprite.SourceRectangle,
                     color: sprite.Color,
                     rotation: sprite.Rotation,

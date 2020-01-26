@@ -8,7 +8,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
     public class Gravity : IForceGenerator
     {
         public Vector3 Acceleration { get; set; }
-        public Gravity() : this(new Vector3(0,-9.81f,0))
+        public Gravity() : this(new Vector3(0,9.81f,0))
         {
             
         }

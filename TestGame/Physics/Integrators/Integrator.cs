@@ -5,13 +5,13 @@ using System.Text;
 
 namespace MyGame.TestGame.Physics.Integrators
 {
-    public abstract class Integrators
+    public abstract class Integrator
     {
         Game game;
 
         public float FixedTimeStep { get; set; }
 
-        public Integrators(Game game)
+        public Integrator(Game game)
         {
             this.game = game;
 
