@@ -50,49 +50,56 @@ namespace MyGame
             //var background = new Entity(gameManager);
             //new SpriteComponent(background, "stars",0, new Vector2(2,2));
 
-            var StationaryBall = new Entity(gameManager, new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 0));
+            var centerPos = new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 0);
+            var StationaryBall = new Entity(gameManager, centerPos);
             new SpriteComponent(StationaryBall, "ball",1,Color.Red,Vector2.One*0.5f);
             new RigidBodyComponent(StationaryBall,1, SimulationObjectType.Passive);
             new BoxColliderComponent(StationaryBall, new Rectangle(0, 0, 68, 68));
             new PlayerInputComponent(StationaryBall);
 
-            var southBall = new Entity(gameManager, new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 1.5f, 0));
+
+            var dist = _graphics.PreferredBackBufferWidth / 4;
+
+            var southBall = new Entity(gameManager, centerPos + -Vector3.Down * dist) ;
             new SpriteComponent(southBall, "ball", 1, Color.Red, Vector2.One * 1f);
             new BoxColliderComponent(southBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(southBall, 5f, SimulationObjectType.Active);
 
-            var eastBall = new Entity(gameManager, new Vector3(_graphics.PreferredBackBufferWidth / 4, _graphics.PreferredBackBufferHeight / 2, 0));
+            var eastBall = new Entity(gameManager, centerPos + Vector3.Right * dist);
             new SpriteComponent(eastBall, "ball", 1, Color.Red, Vector2.One * 1f);
             new BoxColliderComponent(eastBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(eastBall, 5f, SimulationObjectType.Active);
 
-            var westBall = new Entity(gameManager, new Vector3(_graphics.PreferredBackBufferWidth / 1.5f, _graphics.PreferredBackBufferHeight / 2, 0));
+            var westBall = new Entity(gameManager, centerPos + Vector3.Right * -dist);
             new SpriteComponent(westBall, "ball", 1, Color.Red, Vector2.One * 1f);
             new BoxColliderComponent(westBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(westBall, 5f, SimulationObjectType.Active);
 
-            var northBall = new Entity(gameManager, new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 4, 0));
+            var northBall = new Entity(gameManager, centerPos + Vector3.Down * dist);
             new SpriteComponent(northBall, "ball",1,Color.Red,Vector2.One*1f);
             new BoxColliderComponent(northBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(northBall, 5f, SimulationObjectType.Active);
 
-            new SpringComponent(80, 5f, StationaryBall, northBall);
-            new SpringComponent(80, 5f, StationaryBall, southBall);
-            //new SpringComponent(80, 5f, northBall, southBall);
+            new SpringComponent(800, 5f, StationaryBall, northBall);
+            new SpringComponent(800, 5f, StationaryBall, southBall);
+            new SpringComponent(800, 5f, StationaryBall, eastBall);
+            new SpringComponent(800, 5f, StationaryBall, westBall);
 
-            new SpringComponent(80, 5f, eastBall, northBall);
-            new SpringComponent(80, 5f, eastBall, southBall);
-            new SpringComponent(80, 5f, StationaryBall, eastBall);
-            new SpringComponent(80, 5f, StationaryBall, westBall);
-            new SpringComponent(80, 5f, northBall, westBall);
-            new SpringComponent(80, 5f, southBall, westBall);
+            new SpringComponent(800, 5f, eastBall, northBall);
+            new SpringComponent(80, 5f, eastBall, westBall);
+            new SpringComponent(800, 5f, eastBall, southBall);
+            new SpringComponent(800, 5f, northBall, westBall);
+            new SpringComponent(80, 5f, northBall, southBall);
+            new SpringComponent(800, 5f, southBall, westBall);
 
             new Line2DComponent(eastBall, northBall, Color.Red);
+            new Line2DComponent(eastBall, westBall, Color.Red);
             new Line2DComponent(eastBall, southBall, Color.Red);
             new Line2DComponent(StationaryBall, eastBall, Color.Red);
             new Line2DComponent(StationaryBall, westBall, Color.Red);
             new Line2DComponent(northBall, westBall, Color.Red);
             new Line2DComponent(southBall, westBall, Color.Red);
+            new Line2DComponent(southBall, northBall, Color.Red);
 
             new Line2DComponent(StationaryBall, northBall, Color.Red);
             new Line2DComponent(StationaryBall, southBall, Color.Red);
