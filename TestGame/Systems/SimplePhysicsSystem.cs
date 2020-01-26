@@ -39,10 +39,10 @@ namespace MyGame.TestGame.Systems
                 var newRect = new Rectangle((int)newPos.X, (int)newPos.Y,(int)collider.Bounds.Width,(int)collider.Bounds.Height);
 
                 //bounds check
-                if (newRect.Left < 0 || newRect.Right > bounds.Width || newRect.Top < 0 || newRect.Bottom > bounds.Height)
-                {
-                    return;
-                }
+                //if (newRect.Left < 0 || newRect.Right > bounds.Width || newRect.Top < 0 || newRect.Bottom > bounds.Height)
+                //{
+                //    return;
+                //}
                 transform.Position = newPos;
             }
         }
