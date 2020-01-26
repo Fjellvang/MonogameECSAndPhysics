@@ -17,6 +17,7 @@ namespace MyGame.TestGame.Components
         public float Mass { get; set; }
         public SimulationObjectType ObjectType { get; set; }
         public Vector3 PreviousPosition { get; set; }
+        public Vector3 CurrentPosition { get; set; }
         public Vector3 CurrentVelocity { get; set; }
         /// <summary>
         /// All forces acting on the object summed up.
@@ -33,6 +34,10 @@ namespace MyGame.TestGame.Components
         public void ResetForces()
         {
             this.ResultantForce = Vector3.Zero;
+        }
+        public void UpdateEntityPosition()
+        {
+            this.Entity.Position = CurrentPosition;
         }
     }
 }

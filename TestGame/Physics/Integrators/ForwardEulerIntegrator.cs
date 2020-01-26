@@ -14,7 +14,8 @@ namespace MyGame.TestGame.Physics.Integrators
 
         public override void Integrate(Vector3 acceleration, RigidBodyComponent simulationObject)
         {
-            simulationObject.Entity.Position += simulationObject.CurrentVelocity * FixedTimeStep;
+            simulationObject.PreviousPosition = simulationObject.CurrentPosition;
+            simulationObject.CurrentPosition += simulationObject.CurrentVelocity * FixedTimeStep;
             simulationObject.CurrentVelocity += acceleration * FixedTimeStep;
         }
     }

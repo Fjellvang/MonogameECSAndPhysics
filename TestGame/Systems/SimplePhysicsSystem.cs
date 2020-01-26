@@ -23,8 +23,8 @@ namespace MyGame.TestGame.Systems
 
         public override void Initialize()
         {
-            forceGenerators.Add(new Gravity(18));
-            forceGenerators.Add(new Medium(0.1f));
+            forceGenerators.Add(new Gravity(500));
+            //forceGenerators.Add(new Medium(2f));
         }
 
         public override void Update(GameTime gameTime)
@@ -55,8 +55,12 @@ namespace MyGame.TestGame.Systems
                 //find acceleration
                 //todo: maybe this needs another loop ????
                 var accleration = rig.ResultantForce / rig.Mass; //Todo, get a prop for this ?
+                //TODO: SATISFY CONSTRAINTS
 
+                //TODO: Consider if we need to move translation out of integration ?
                 Integrator.Integrate(accleration, rig);
+
+                rig.UpdateEntityPosition();
 
                 rig.ResetForces();
                 //TODO: will these two lines end up being identical ???

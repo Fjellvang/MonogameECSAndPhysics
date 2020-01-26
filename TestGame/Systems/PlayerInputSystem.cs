@@ -10,7 +10,7 @@ namespace MyGame.TestGame.Systems
 {
     public class PlayerInputSystem : BaseSystem
     {
-        float speed = 4f;
+        float speed = 50f;
         float origspeed;
         KeyboardState oldState;
         public PlayerInputSystem(IManager manager) : base(manager)
