@@ -18,6 +18,16 @@ namespace MyGame.TestGame.Systems
         {
             this.game = game ?? throw new ArgumentNullException(nameof(game));
         }
+        //public static void DrawLine(this SpriteBatch spriteBatch, Vector2 point1, Vector2 point2, Color color, float thickness)
+        //{
+        //    // calculate the distance between the two vectors
+        //    float distance = Vector2.Distance(point1, point2);
+
+        //    // calculate the angle between the two vectors
+        //    float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
+        //    DrawLine(spriteBatch, point1, distance, angle, color, thickness);
+        //}
 
         public override void Draw()
         {
@@ -33,7 +43,7 @@ namespace MyGame.TestGame.Systems
                 //Quick fix...
                 var trans2d = new Vector2(sprite.Entity.Position.X, sprite.Entity.Position.Y);
 
-                //Int32[] pixel = { 0xFFFFFF };
+                // calculate the distance between the two vectors
 
                 var texture = TextureDictionary[sprite.TextureName];
                 sprite.SourceRectangle = sprite.SourceRectangle ?? new Rectangle(0, 0, texture.Width, texture.Height);
@@ -48,6 +58,28 @@ namespace MyGame.TestGame.Systems
                     layerDepth: sprite.Layer
                    );
             }
+            for (int i = 0; i < Line2DComponent.Instances.Count; i++)
+            {
+                var comp = Line2DComponent.Instances[i];
+                var point1 = comp.Entity.Position.ToVector2();
+                var point2 = comp.ToEntity.Position.ToVector2();
+                float distance = Vector2.Distance(point1, point2);
+
+                // calculate the angle between the two vectors
+                float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
+                spriteBatch.Draw(TextureDictionary["dot"],
+                    point1,
+                    null,
+                    Color.Red,
+                    angle,
+                    Vector2.Zero,
+                    new Vector2(distance, 5f),
+                    SpriteEffects.None,
+                    0f
+                    );
+
+            }
             spriteBatch.End();
         }
 
@@ -57,6 +89,10 @@ namespace MyGame.TestGame.Systems
             var content = this.game.Content;
             this.spriteBatch = new SpriteBatch(game.GraphicsDevice);
 
+            var pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            pixel.SetData(new[] { Color.White });
+
+            TextureDictionary.Add("dot", pixel);
             TextureDictionary.Add("Man", content.Load<Texture2D>("character1_without_arm"));
             TextureDictionary.Add("stars", content.Load<Texture2D>("stars"));
             TextureDictionary.Add("white", content.Load<Texture2D>("white"));
