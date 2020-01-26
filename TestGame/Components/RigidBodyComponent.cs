@@ -27,6 +27,7 @@ namespace MyGame.TestGame.Components
         {
             this.Mass = mass;
             this.ObjectType = objectType;
+            CurrentPosition = entity.Position;
             PreviousPosition = entity.Position;
             CurrentVelocity = Vector3.Zero;
         }
