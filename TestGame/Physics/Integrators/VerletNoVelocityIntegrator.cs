@@ -37,6 +37,7 @@ namespace MyGame.TestGame.Physics.Integrators
                 - (1 - drag) * simulationObject.PreviousPosition
                 + acceleration * FixedTimeStep * FixedTimeStep;
 
+            simulationObject.CurrentVelocity += acceleration * FixedTimeStep;
             simulationObject.PreviousPosition = simulationObject.CurrentPosition;
             simulationObject.CurrentPosition = newPos;
         }

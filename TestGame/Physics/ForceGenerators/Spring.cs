@@ -53,7 +53,8 @@ namespace MyGame.TestGame.Physics.ForceGenerators
                 var force = -Stiffness * ((currentLength - RestLength) * direction);
 
                 //add spring damping force
-                force += -Damping * Vector3.Dot(SimulationObjectA.CurrentVelocity - SimulationObjectB.CurrentVelocity, direction) * direction;
+                var addition = -Damping * Vector3.Dot(SimulationObjectA.CurrentVelocity - SimulationObjectB.CurrentVelocity, direction) * direction;
+                force += addition;
 
                 SimulationObjectA.ResultantForce += force;
                 SimulationObjectB.ResultantForce += -force;

@@ -1,4 +1,5 @@
-﻿using MyGame.ECS.Components;
+﻿using Microsoft.Xna.Framework;
+using MyGame.ECS.Components;
 using MyGame.ECS.Entities;
 using MyGame.TestGame.Physics.ForceGenerators;
 using System;
@@ -10,7 +11,7 @@ namespace MyGame.TestGame.Components
     public class SpringComponent : BaseComponent<SpringComponent>
     {
         public Spring spring { get; set; }
-        public SpringComponent(float stiffness, float damping, IEntity entity, IEntity other, float? restLength = null) : base(entity)
+        public SpringComponent(float stiffness, float damping, IEntity entity, IEntity other, float? restLength = null, bool addLine = true) : base(entity)
         {
             var rigA = entity.GetComponent<RigidBodyComponent>();
             var rigB = other.GetComponent<RigidBodyComponent>();
@@ -25,6 +26,10 @@ namespace MyGame.TestGame.Components
             else
             {
                 spring = new Spring(stiffness, damping, rigA, rigB, restLength.Value);
+            }
+            if (addLine)
+            {
+                new Line2DComponent(entity, other, Color.Red);
             }
         }
     }

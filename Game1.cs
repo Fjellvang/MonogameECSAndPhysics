@@ -35,8 +35,8 @@ namespace MyGame
 
             gameManager.AddSystem(new SpriteRendererSystem(gameManager, this));
             gameManager.AddSystem(new PlayerInputSystem(gameManager));
-            gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), new VerletNoVelocityIntegrator(this, 0.01f)));
-            //gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), new VerletNoVelocityIntegrator(this)));
+            gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), new VerletNoVelocityIntegrator(this, 0.01f)));
+            //gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), new ForwardEulerIntegrator(this)));
             gameManager.Initialize();
 
             //Entity player = new Entity(gameManager);
@@ -59,50 +59,103 @@ namespace MyGame
 
 
             var dist = _graphics.PreferredBackBufferWidth / 4;
-
-            var southBall = new Entity(gameManager, centerPos + -Vector3.Down * dist) ;
+            var southballPos = centerPos + -Vector3.Down * dist;
+            var southBall = new Entity(gameManager, southballPos) ;
             new SpriteComponent(southBall, "ball", 1, Color.Red, Vector2.One * 1f);
             new BoxColliderComponent(southBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(southBall, 5f, SimulationObjectType.Active);
 
-            var eastBall = new Entity(gameManager, centerPos + Vector3.Right * dist);
+            var eastBallPos = centerPos + Vector3.Right * dist;
+            var eastBall = new Entity(gameManager,eastBallPos);
             new SpriteComponent(eastBall, "ball", 1, Color.Red, Vector2.One * 1f);
             new BoxColliderComponent(eastBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(eastBall, 5f, SimulationObjectType.Active);
 
-            var westBall = new Entity(gameManager, centerPos + Vector3.Right * -dist);
+            var westBallPos = centerPos + Vector3.Right * -dist;
+            var westBall = new Entity(gameManager, westBallPos);
             new SpriteComponent(westBall, "ball", 1, Color.Red, Vector2.One * 1f);
             new BoxColliderComponent(westBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(westBall, 5f, SimulationObjectType.Active);
 
-            var northBall = new Entity(gameManager, centerPos + Vector3.Down * dist);
+            var northBallPos = centerPos + Vector3.Down * dist;
+            var northBall = new Entity(gameManager, northBallPos);
             new SpriteComponent(northBall, "ball",1,Color.Red,Vector2.One*1f);
             new BoxColliderComponent(northBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(northBall, 5f, SimulationObjectType.Active);
 
-            new SpringComponent(800, 5f, StationaryBall, northBall);
-            new SpringComponent(800, 5f, StationaryBall, southBall);
-            new SpringComponent(800, 5f, StationaryBall, eastBall);
-            new SpringComponent(800, 5f, StationaryBall, westBall);
+            var northEastBallPos = eastBallPos + .5f * (northBallPos - eastBallPos);
+            var northEastBall = new Entity(gameManager, northEastBallPos);
+            new SpriteComponent(northEastBall, "ball",1,Color.Red,Vector2.One*1f);
+            new BoxColliderComponent(northEastBall, new Rectangle(0, 0, 68, 68));
+            new RigidBodyComponent(northEastBall, 5f, SimulationObjectType.Active);
 
-            new SpringComponent(800, 5f, eastBall, northBall);
-            new SpringComponent(80, 5f, eastBall, westBall);
-            new SpringComponent(800, 5f, eastBall, southBall);
-            new SpringComponent(800, 5f, northBall, westBall);
-            new SpringComponent(80, 5f, northBall, southBall);
-            new SpringComponent(800, 5f, southBall, westBall);
+            var northwestBallPos = westBallPos + .5f * (northBallPos - westBallPos);
+            var northwestBall = new Entity(gameManager, northwestBallPos);
+            new SpriteComponent(northwestBall, "ball",1,Color.Red,Vector2.One*1f);
+            new BoxColliderComponent(northwestBall, new Rectangle(0, 0, 68, 68));
+            new RigidBodyComponent(northwestBall, 5f, SimulationObjectType.Active);
 
-            new Line2DComponent(eastBall, northBall, Color.Red);
-            new Line2DComponent(eastBall, westBall, Color.Red);
-            new Line2DComponent(eastBall, southBall, Color.Red);
-            new Line2DComponent(StationaryBall, eastBall, Color.Red);
-            new Line2DComponent(StationaryBall, westBall, Color.Red);
-            new Line2DComponent(northBall, westBall, Color.Red);
-            new Line2DComponent(southBall, westBall, Color.Red);
-            new Line2DComponent(southBall, northBall, Color.Red);
+            var southEastBallPos = eastBallPos+ .5f * (southballPos - eastBallPos);
+            var southEastBall = new Entity(gameManager, southEastBallPos);
+            new SpriteComponent(southEastBall, "ball",1,Color.Red,Vector2.One*1f);
+            new BoxColliderComponent(southEastBall, new Rectangle(0, 0, 68, 68));
+            new RigidBodyComponent(southEastBall, 5f, SimulationObjectType.Active);
 
-            new Line2DComponent(StationaryBall, northBall, Color.Red);
-            new Line2DComponent(StationaryBall, southBall, Color.Red);
+            var southWestBallPos = westBallPos + .5f * (southballPos - westBallPos);
+            var southWestBall = new Entity(gameManager, southWestBallPos);
+            new SpriteComponent(southWestBall, "ball",1,Color.Red,Vector2.One*1f);
+            new BoxColliderComponent(southWestBall, new Rectangle(0, 0, 68, 68));
+            new RigidBodyComponent(southWestBall, 5f, SimulationObjectType.Active);
+
+
+            var dampness = 50f;
+            var innerDampness = dampness * 2;
+            var stiffness = 800;
+            var innerStiffness = stiffness * 2;
+            //cetner to vertices
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, northBall);
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, southBall);
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, eastBall);
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, westBall);
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, northwestBall);
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, southWestBall);
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, northEastBall);
+            new SpringComponent(innerStiffness, innerDampness, StationaryBall, southEastBall);
+
+            //Edges
+            new SpringComponent(stiffness, dampness, eastBall, northEastBall);
+            new SpringComponent(stiffness, dampness, eastBall, southEastBall);
+            new SpringComponent(stiffness, dampness, northEastBall, northBall);
+            new SpringComponent(stiffness, dampness, northwestBall, northBall);
+            new SpringComponent(stiffness, dampness, northwestBall, westBall);
+            new SpringComponent(stiffness, dampness, westBall, southWestBall);
+            new SpringComponent(stiffness, dampness, southWestBall, southBall);
+            new SpringComponent(stiffness, dampness, southBall, southEastBall);
+            //crossesection
+            new SpringComponent(stiffness, dampness, southWestBall,northwestBall);
+            new SpringComponent(stiffness, dampness, southEastBall,northEastBall);
+            new SpringComponent(stiffness, dampness, southEastBall,southWestBall);
+            new SpringComponent(stiffness, dampness, northwestBall,northEastBall);
+            
+
+
+            //new SpringComponent(80, dampness, eastBall, westBall);
+
+
+            //new SpringComponent(800, dampness, northBall, westBall);
+            //new SpringComponent(80, dampness, northBall, southBall);
+
+            //new Line2DComponent(eastBall, northBall, Color.Red);
+            //new Line2DComponent(eastBall, westBall, Color.Red);
+            //new Line2DComponent(eastBall, southBall, Color.Red);
+            //new Line2DComponent(StationaryBall, eastBall, Color.Red);
+            //new Line2DComponent(StationaryBall, westBall, Color.Red);
+            //new Line2DComponent(northBall, westBall, Color.Red);
+            //new Line2DComponent(southBall, westBall, Color.Red);
+            //new Line2DComponent(southBall, northBall, Color.Red);
+
+            //new Line2DComponent(StationaryBall, northBall, Color.Red);
+            //new Line2DComponent(StationaryBall, southBall, Color.Red);
             //new Line2DComponent(southBall, northBall, Color.Red);
             //new SimpleRigidbodyComponent(ball);
 
