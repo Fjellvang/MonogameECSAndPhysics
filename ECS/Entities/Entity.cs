@@ -10,6 +10,8 @@ namespace MyGame.ECS.Entities
     public class Entity : IEntity
     {
         public Vector3 Position { get; set; } //TODO: In the future this could be a matrix with pos, scale and rot ?..
+        public Matrix Rotation { get; set; } = Matrix.Identity;
+        
         public Entity(IManager manager, Vector3 position)
         {
             this.manager = manager;
@@ -24,6 +26,7 @@ namespace MyGame.ECS.Entities
         public IManager Manager => manager;
 
         public IList<IComponent> Components => components;
+
 
         public T GetComponent<T>() where T : IComponent
         {

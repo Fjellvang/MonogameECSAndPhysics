@@ -10,6 +10,7 @@ namespace MyGame.ECS.Entities
     public interface IEntity
     {
         Vector3 Position { get; set; }
+        Matrix Rotation { get; set; }
         IManager Manager { get; }
         IList<IComponent> Components { get; }  //TODO: Could be dict? NameofComponent, should be faster lookup ?
         T GetComponent<T>() where T : IComponent;

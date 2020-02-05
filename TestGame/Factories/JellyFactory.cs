@@ -22,6 +22,7 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, top.ToVector2(), downLeft.ToVector2());
             new LineRelativeToEntityComponent(entity, downLeft.ToVector2(), downRight.ToVector2());
             new LineRelativeToEntityComponent(entity, downRight.ToVector2(), top.ToVector2());
+            new PlayerInputComponent(entity);
             return entity;
         }
 
@@ -32,7 +33,7 @@ namespace MyGame.TestGame.Factories
             //new SpriteComponent(StationaryBall, "ball",1,Color.Red,Vector2.One*0.5f);
             new RigidBodyComponent(StationaryBall,1, SimulationObjectType.Passive);
             new BoxColliderComponent(StationaryBall, new Rectangle(0, 0, 68, 68));
-            new PlayerInputComponent(StationaryBall);
+            //new PlayerInputComponent(StationaryBall);
 
 
             var dist = width;
