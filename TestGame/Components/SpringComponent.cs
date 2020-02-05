@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using MyGame.ECS.Components;
 using MyGame.ECS.Entities;
+using MyGame.TestGame.Components.SpriteComponents;
 using MyGame.TestGame.Physics.ForceGenerators;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace MyGame.TestGame.Components
             }
             if (addLine)
             {
-                new Line2DComponent(entity, other, Color.Red);
+                new LineEntityToEntityComponent(entity, other, Color.Red);
             }
         }
     }

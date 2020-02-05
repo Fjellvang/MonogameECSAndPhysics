@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using MyGame.ECS.Systems;
 using MyGame.TestGame.Components;
+using MyGame.TestGame.Components.SpriteComponents;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,23 +59,18 @@ namespace MyGame.TestGame.Systems
                     layerDepth: sprite.Layer
                    );
             }
-            for (int i = 0; i < Line2DComponent.Instances.Count; i++)
+            for (int i = 0; i < LineComponentBase.Instances.Count; i++)
             {
-                var comp = Line2DComponent.Instances[i];
-                var point1 = comp.Entity.Position.ToVector2();
-                var point2 = comp.ToEntity.Position.ToVector2();
-                float distance = Vector2.Distance(point1, point2);
-
+                var comp = LineComponentBase.Instances[i];
+                comp.CalculateLine(out var from, out var distance, out var angle);
                 // calculate the angle between the two vectors
-                float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
-
                 spriteBatch.Draw(TextureDictionary["dot"],
-                    point1,
+                    from,
                     null,
-                    Color.Red,
+                    comp.color,
                     angle,
                     Vector2.Zero,
-                    new Vector2(distance, 5f),
+                    new Vector2(distance, 2f),
                     SpriteEffects.None,
                     0f
                     );

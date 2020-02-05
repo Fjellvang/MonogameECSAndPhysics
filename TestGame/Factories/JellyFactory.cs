@@ -2,15 +2,30 @@
 using MyGame.ECS.Entities;
 using MyGame.ECS.Systems;
 using MyGame.TestGame.Components;
+using MyGame.TestGame.Components.SpriteComponents;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MyGame.TestGame.Factories
 {
-    public static class GellyFactory
+    public static class JellyFactory
     {
-        public static IEntity CreateControllableCube(Vector3 centerPos, IManager gameManager, float width = 1280/4)
+        public static IEntity CreateControllableTrianle(Vector3 center, IManager manager, float scale = 1)
+        {
+            var entity = new Entity(manager, center);
+
+            var pi = Math.PI;
+            var top = new Vector3((float)Math.Cos(pi / 2), (float)Math.Sin(pi / 2), 0) * 2 * scale;
+            var downLeft = new Vector3((float)Math.Cos(pi*5/4), (float)Math.Sin(pi*5/4), 0) * 2 * scale;
+            var downRight = new Vector3((float)Math.Cos(pi*7/4), (float)Math.Sin(pi*7/4), 0) * 2 * scale;
+            new LineRelativeToEntityComponent(entity, top.ToVector2(), downLeft.ToVector2());
+            new LineRelativeToEntityComponent(entity, downLeft.ToVector2(), downRight.ToVector2());
+            new LineRelativeToEntityComponent(entity, downRight.ToVector2(), top.ToVector2());
+            return entity;
+        }
+
+        public static IEntity CreateControllableCube(Vector3 centerPos, IManager gameManager, float width = 320)
         {
 
             var StationaryBall = new Entity(gameManager, centerPos);

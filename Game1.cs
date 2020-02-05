@@ -43,7 +43,8 @@ namespace MyGame
 
             var centerPos = new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 0);
 
-            GellyFactory.CreateControllableCube(centerPos, gameManager, 320);
+            JellyFactory.CreateControllableCube(centerPos, gameManager, 320);
+            JellyFactory.CreateControllableTrianle(centerPos, gameManager, 20);
 
 
             //new SpringComponent(80, dampness, eastBall, westBall);
