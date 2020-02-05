@@ -10,7 +10,7 @@ namespace MyGame.TestGame.Systems
 {
     public class PlayerInputSystem : BaseSystem
     {
-        float angleRotationalSpeed = 1f;
+        float angleRotationalSpeed = .01f;
         float angle = 0;
         float speed = 50f;
         float origspeed;
@@ -62,15 +62,16 @@ namespace MyGame.TestGame.Systems
                 if (state.IsKeyDown(Keys.Q))
                 {
                     angle += angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                }
+                    comp.Entity.Rotation = Matrix.CreateRotationZ(angle);
+                }else
                 if (state.IsKeyDown(Keys.E))
                 {
                     angle -= angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    comp.Entity.Rotation = Matrix.CreateRotationZ(angle);
                 }
 
 
 
-                comp.Entity.Rotation = Matrix.CreateRotationZ(angle);
                 oldState = state;
             }
         }
