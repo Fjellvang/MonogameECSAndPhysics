@@ -10,7 +10,7 @@ namespace MyGame.TestGame.Systems
 {
     public class PlayerInputSystem : BaseSystem
     {
-        float angleRotationalSpeed = .01f;
+        float angleRotationalSpeed = 2f;
         float angle = 0;
         float speed = 50f;
         float origspeed;
@@ -43,6 +43,7 @@ namespace MyGame.TestGame.Systems
                     speed = origspeed;
                 }
 
+                Vector3 translationVector = Vector3.Zero;
                 if (state.IsKeyDown(Keys.A))
                 {
                     comp.Entity.Position -= new Vector3(0.1f, 0, 0) * speed;
