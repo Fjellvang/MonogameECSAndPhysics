@@ -25,6 +25,12 @@ namespace MyGame.TestGame.Factories
             new PlayerInputComponent(entity);
             return entity;
         }
+        public static IEntity CreateControllableCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        {
+            var entity = CreateCube(center, manager, scale, color);
+            new PlayerInputComponent(entity);
+            return entity;
+        }
         public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
         {
             var entity = new Entity(manager, center);
@@ -46,7 +52,7 @@ namespace MyGame.TestGame.Factories
             var next = width;
             for (int i = 0; i < 5; i++)
             {
-                var angle = (float)manager.GetRandom.NextDouble() * max;
+                var angle = 0.5f + (float)manager.GetRandom.NextDouble() * (max - 0.5f);
                 //Is this overrotation ???
                 next = Vector2.Transform(next, Matrix.CreateRotationZ(angle));
                 new LineRelativeToEntityComponent(entity, first, next, color);

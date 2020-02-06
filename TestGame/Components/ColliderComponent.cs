@@ -1,4 +1,5 @@
-﻿using MyGame.ECS.Components;
+﻿using Microsoft.Xna.Framework;
+using MyGame.ECS.Components;
 using MyGame.ECS.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,7 @@ namespace MyGame.TestGame.Components
         public ColliderComponent(IEntity entity) : base(entity)
         {
         }
+
+        public abstract bool CollidesWith(ColliderComponent collider, out Vector2 point);
     }
 }
