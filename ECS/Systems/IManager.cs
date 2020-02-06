@@ -8,6 +8,7 @@ namespace MyGame.ECS.Systems
 {
     public interface IManager
     {
+        Random GetRandom { get; }// TODO: Consider if its smart here???
         IEnumerable<IEntity> Entities { get; }
         IEnumerable<ISystem> Systems { get; }
         void AddEntity(IEntity entity);

@@ -18,6 +18,9 @@ namespace MyGame.ECS.Systems
 
         public IEnumerable<ISystem> Systems => systems;
 
+        private Random random = new Random();
+        public Random GetRandom => random;
+
         public void AddEntity(IEntity entity)
         {
             entities.Add(entity);

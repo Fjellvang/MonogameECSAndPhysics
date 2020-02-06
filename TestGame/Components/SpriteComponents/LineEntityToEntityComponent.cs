@@ -21,6 +21,5 @@ namespace MyGame.TestGame.Components.SpriteComponents
         }
 
         public IEntity toEntity { get; }
-        public Color color { get; }
     }
 }

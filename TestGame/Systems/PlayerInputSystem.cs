@@ -46,19 +46,19 @@ namespace MyGame.TestGame.Systems
                 Vector3 translationVector = Vector3.Zero;
                 if (state.IsKeyDown(Keys.A))
                 {
-                    comp.Entity.Position -= new Vector3(0.1f, 0, 0) * speed;
+                    translationVector -= new Vector3(0.1f, 0, 0) * speed;
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
-                    comp.Entity.Position += new Vector3(0.1f, 0, 0) * speed;
-                }
-                if (state.IsKeyDown(Keys.S))
-                {
-                    comp.Entity.Position += new Vector3(0, 0.1f, 0) * speed;
+                    translationVector += new Vector3(0.1f, 0, 0) * speed;
                 }
                 if (state.IsKeyDown(Keys.W))
                 {
-                    comp.Entity.Position -= new Vector3(0, 0.1f, 0) * speed;
+                    translationVector += new Vector3(0, 0.1f, 0) * speed;
+                }
+                if (state.IsKeyDown(Keys.S))
+                {
+                    translationVector -= new Vector3(0, 0.1f, 0) * speed;
                 }
                 if (state.IsKeyDown(Keys.Q))
                 {
@@ -70,6 +70,8 @@ namespace MyGame.TestGame.Systems
                     angle -= angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     comp.Entity.Rotation = Matrix.CreateRotationZ(angle);
                 }
+                comp.Entity.Position += Vector3.Transform(translationVector, comp.Entity.Rotation);
+                
 
 
 

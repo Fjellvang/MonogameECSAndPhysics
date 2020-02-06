@@ -11,7 +11,7 @@ namespace MyGame.TestGame.Factories
 {
     public static class JellyFactory
     {
-        public static IEntity CreateControllableTrianle(Vector3 center, IManager manager, float scale = 1)
+        public static IEntity CreateControllableTriangle(Vector3 center, IManager manager, float scale = 1, Color color = default)
         {
             var entity = new Entity(manager, center);
 
@@ -19,21 +19,51 @@ namespace MyGame.TestGame.Factories
             var top = new Vector3((float)Math.Cos(pi / 2), (float)Math.Sin(pi / 2), 0) * 2 * scale;
             var downLeft = new Vector3((float)Math.Cos(pi*5/4), (float)Math.Sin(pi*5/4), 0) * 2 * scale;
             var downRight = new Vector3((float)Math.Cos(pi*7/4), (float)Math.Sin(pi*7/4), 0) * 2 * scale;
-            new LineRelativeToEntityComponent(entity, top.ToVector2(), downLeft.ToVector2());
-            new LineRelativeToEntityComponent(entity, downLeft.ToVector2(), downRight.ToVector2());
-            new LineRelativeToEntityComponent(entity, downRight.ToVector2(), top.ToVector2());
+            new LineRelativeToEntityComponent(entity, top.ToVector2(), downLeft.ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, downLeft.ToVector2(), downRight.ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, downRight.ToVector2(), top.ToVector2(), color);
             new PlayerInputComponent(entity);
             return entity;
         }
-
-        public static IEntity CreateControllableCube(Vector3 centerPos, IManager gameManager, float width = 320)
+        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        {
+            var entity = new Entity(manager, center);
+            var width = Vector3.Right * scale;
+            var height = Vector3.Up * scale;
+            new LineRelativeToEntityComponent(entity, Vector2.Zero, width.ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, width.ToVector2(), (width + height).ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, (width + height).ToVector2(), height.ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, height.ToVector2(), Vector2.Zero, color);
+            return entity;
+        }
+        public static IEntity CreateRandomShape(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        {
+            var entity = new Entity(manager, center);
+            var width = Vector2.UnitX * scale;
+            var max = (float)Math.PI;
+            //var current = 0f;
+            var first = Vector2.Zero;
+            var next = width;
+            for (int i = 0; i < 5; i++)
+            {
+                var angle = (float)manager.GetRandom.NextDouble() * max;
+                //Is this overrotation ???
+                next = Vector2.Transform(next, Matrix.CreateRotationZ(angle));
+                new LineRelativeToEntityComponent(entity, first, next, color);
+                max -= angle;
+                first = next;
+            }
+            new LineRelativeToEntityComponent(entity, first, Vector2.Zero, color);
+            return entity;
+        }
+        public static IEntity CreateControllabelJellyCube(Vector3 centerPos, IManager gameManager, float width = 320)
         {
 
             var StationaryBall = new Entity(gameManager, centerPos);
             //new SpriteComponent(StationaryBall, "ball",1,Color.Red,Vector2.One*0.5f);
             new RigidBodyComponent(StationaryBall,1, SimulationObjectType.Passive);
             new BoxColliderComponent(StationaryBall, new Rectangle(0, 0, 68, 68));
-            //new PlayerInputComponent(StationaryBall);
+            new PlayerInputComponent(StationaryBall);
 
 
             var dist = width;

@@ -43,29 +43,16 @@ namespace MyGame
 
             var centerPos = new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2, 0);
 
-            JellyFactory.CreateControllableCube(centerPos, gameManager, 320);
-            JellyFactory.CreateControllableTrianle(centerPos, gameManager, 20);
+            //JellyFactory.CreateControllabelJellyCube(centerPos, gameManager, 320);
+            JellyFactory.CreateControllableTriangle(centerPos, gameManager, 20, Color.CornflowerBlue);
+            //JellyFactory.CreateCube(new Vector3(40,40,0), gameManager, 60, Color.White);
+            JellyFactory.CreateRandomShape(new Vector3(400,400,0), gameManager, 60, Color.White);
+            JellyFactory.CreateRandomShape(new Vector3(800,400,0), gameManager, 60, Color.White);
+            JellyFactory.CreateRandomShape(new Vector3(400,800,0), gameManager, 60, Color.White);
+            JellyFactory.CreateRandomShape(new Vector3(200,600,0), gameManager, 60, Color.White);
+            JellyFactory.CreateRandomShape(new Vector3(700,300,0), gameManager, 60, Color.White);
 
 
-            //new SpringComponent(80, dampness, eastBall, westBall);
-
-
-            //new SpringComponent(800, dampness, northBall, westBall);
-            //new SpringComponent(80, dampness, northBall, southBall);
-
-            //new Line2DComponent(eastBall, northBall, Color.Red);
-            //new Line2DComponent(eastBall, westBall, Color.Red);
-            //new Line2DComponent(eastBall, southBall, Color.Red);
-            //new Line2DComponent(StationaryBall, eastBall, Color.Red);
-            //new Line2DComponent(StationaryBall, westBall, Color.Red);
-            //new Line2DComponent(northBall, westBall, Color.Red);
-            //new Line2DComponent(southBall, westBall, Color.Red);
-            //new Line2DComponent(southBall, northBall, Color.Red);
-
-            //new Line2DComponent(StationaryBall, northBall, Color.Red);
-            //new Line2DComponent(StationaryBall, southBall, Color.Red);
-            //new Line2DComponent(southBall, northBall, Color.Red);
-            //new SimpleRigidbodyComponent(ball);
 
             base.Initialize();
         }

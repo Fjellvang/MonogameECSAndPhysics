@@ -33,7 +33,7 @@ namespace MyGame.TestGame.Systems
         public override void Draw()
         {
             //Not sure if needed
-            game.GraphicsDevice.Clear(Color.AntiqueWhite);
+            game.GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack);
             for (int i = 0; i < SpriteComponent.Instances.Count; i++)

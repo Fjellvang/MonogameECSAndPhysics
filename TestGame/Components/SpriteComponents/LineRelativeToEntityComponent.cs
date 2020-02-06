@@ -11,7 +11,7 @@ namespace MyGame.TestGame.Components.SpriteComponents
         private Vector2 point1;
         private Vector2 point2;
 
-        public LineRelativeToEntityComponent(IEntity entity, Vector2 point1, Vector2 point2) : base(entity,Color.DarkBlue)
+        public LineRelativeToEntityComponent(IEntity entity, Vector2 point1, Vector2 point2, Color color = default) : base(entity,color)
         {
             this.point1 = point1;
             this.point2 = point2;
