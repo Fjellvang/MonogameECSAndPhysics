@@ -29,6 +29,9 @@ namespace MyGame.TestGame.Factories
         {
             var entity = CreateCube(center, manager, scale, color);
             new PlayerInputComponent(entity);
+            var width = Vector3.Right * scale;
+            var height = Vector3.Up * scale;
+            new BoxCollider(entity, width.ToVector2(), height.ToVector2());
             return entity;
         }
         public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
@@ -40,6 +43,7 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, width.ToVector2(), (width + height).ToVector2(), color);
             new LineRelativeToEntityComponent(entity, (width + height).ToVector2(), height.ToVector2(), color);
             new LineRelativeToEntityComponent(entity, height.ToVector2(), Vector2.Zero, color);
+            new BoxCollider(entity, width.ToVector2(), height.ToVector2());
             return entity;
         }
         public static IEntity CreateRandomShape(Vector3 center, IManager manager, float scale = 1, Color color = default)

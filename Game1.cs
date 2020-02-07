@@ -36,6 +36,7 @@ namespace MyGame
 
             gameManager.AddSystem(new SpriteRendererSystem(gameManager, this));
             gameManager.AddSystem(new PlayerInputSystem(gameManager));
+            gameManager.AddSystem(new CollisionSystem(gameManager));
             gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), new VerletNoVelocityIntegrator(this, 0.01f)));
             //gameManager.AddSystem(new SimplePhysicsSystem(gameManager, new Rectangle(0, 0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight), new ForwardEulerIntegrator(this)));
             gameManager.Initialize();

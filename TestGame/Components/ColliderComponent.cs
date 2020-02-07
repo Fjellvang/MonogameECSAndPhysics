@@ -13,6 +13,6 @@ namespace MyGame.TestGame.Components
         {
         }
 
-        public abstract bool CollidesWith(ColliderComponent collider, out Vector2 point);
+        public abstract bool CollidesWith(ColliderComponent collider, out Vector2? point);
     }
 }
