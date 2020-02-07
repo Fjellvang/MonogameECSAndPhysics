@@ -38,7 +38,7 @@ namespace MyGame.TestGame.Components
             var pos = this.Entity.Position.ToVector2();
             for (int i = 0; i < vertices.Length; i++)
             {
-                yield return pos + vertices[i];
+                yield return pos + Vector2.Transform(vertices[i], this.Entity.Rotation);
             }
         }
 
