@@ -32,6 +32,7 @@ namespace MyGame.TestGame.Factories
             var width = Vector3.Right * scale;
             var height = Vector3.Up * scale;
             new BoxCollider(entity, width.ToVector2(), height.ToVector2());
+            new RigidBodyComponent(entity, 1, SimulationObjectType.Active);
             return entity;
         }
         public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)

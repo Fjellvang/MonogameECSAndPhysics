@@ -7,6 +7,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
 {
     public interface IForceGenerator
     {
+        
         void ApplyForce(RigidBodyComponent simulationObject);
     }
 }

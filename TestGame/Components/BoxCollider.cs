@@ -8,16 +8,16 @@ using MyGame.ECS.Entities;
 
 namespace MyGame.TestGame.Components
 {
-    public class BoxCollider : ColliderComponent
+    public sealed class BoxCollider : ColliderComponent
     {
         public BoxCollider(IEntity entity, Vector2 width, Vector2 height) : base(entity)
         {
             Width = width;
             Height = height;
-            V0 = Vector2.Zero;
-            V1 = width;
-            V2 = width + height;
-            V3 = height;
+            var V0 = Vector2.Zero;
+            var V1 = width;
+            var V2 = width + height;
+            var V3 = height;
             Center = new Vector2((width * .5f).Length(), (height * .5f).Length());
             vertices = new Vector2[] { V0, V1, V2, V3 };
         }
@@ -26,48 +26,48 @@ namespace MyGame.TestGame.Components
         public Vector2 Height { get; }
         public Vector2 Center { get; }
 
-        //Vertices...
-        public Vector2 V0;
-        public Vector2 V1;
-        public Vector2 V2;
-        public Vector2 V3;
 
         public Vector2[] vertices;
-        public IEnumerable<Vector2> Vertices()
+        public Vector2[] Vertices(Vector2 pos, Matrix nextRotation)
         {
-            var pos = this.Entity.Position.ToVector2();
+            var retval = new Vector2[vertices.Length];
             for (int i = 0; i < vertices.Length; i++)
             {
-                yield return pos + Vector2.Transform(vertices[i], this.Entity.Rotation);
+                retval[i] = pos + Vector2.Transform(vertices[i], nextRotation);
             }
+            return retval;
         }
 
-        public Vector2[] Normals()
+        public Vector2[] Normals(Matrix nextRotation)
         {
             var retval = new Vector2[2];
-            retval[0] = (Vector2.Transform(vertices[1] - vertices[0], this.Entity.Rotation)).ToLeftTurnedNormal();
-            retval[1] = (Vector2.Transform(vertices[2] - vertices[1], this.Entity.Rotation)).ToLeftTurnedNormal();
+            retval[0] = (Vector2.Transform(vertices[1] - vertices[0], nextRotation)).ToLeftTurnedNormal();
+            retval[1] = (Vector2.Transform(vertices[2] - vertices[1], nextRotation)).ToLeftTurnedNormal();
             //retval[2] = (Vector2.Transform(vertices[3] - vertices[2], this.Entity.Rotation)).ToLeftTurnedNormal();
             //retval[3] = (Vector2.Transform(vertices[0] - vertices[3], this.Entity.Rotation)).ToLeftTurnedNormal();
             return retval;
         }
 
-        public override bool CollidesWith(ColliderComponent collider, out Vector2? point)
+        public override bool CollidesWith(Vector2 nextPos, Matrix nextRotation, ColliderComponent collider, out Vector2? point)
         {
             if (collider is BoxCollider other)
             {
-                var axes = this.Normals();
-                var otherAxes = other.Normals();
-                var one = !CollisionOnAxis(this.Vertices().ToArray(), other.Vertices().ToArray(), axes[0]);
-                var two = !CollisionOnAxis(this.Vertices().ToArray(), other.Vertices().ToArray(), axes[1]);
-                var three = !CollisionOnAxis(this.Vertices().ToArray(), other.Vertices().ToArray(), otherAxes[0]);
-                var four = !CollisionOnAxis(this.Vertices().ToArray(), other.Vertices().ToArray(), otherAxes[1]);
+                var axes = this.Normals(nextRotation);
+                var otherAxes = other.Normals(other.Entity.Rotation);
+                //var thispos = Entity.Position.ToVector2();
+                var thatpos = collider.Entity.Position.ToVector2();
+                var one = !CollisionOnAxis(this.Vertices(nextPos, nextRotation), other.Vertices(thatpos, other.Entity.Rotation), axes[0]);
+                var two = !CollisionOnAxis(this.Vertices(nextPos, nextRotation), other.Vertices(thatpos, other.Entity.Rotation), axes[1]);
+                var three = !CollisionOnAxis(this.Vertices(nextPos, nextRotation), other.Vertices(thatpos, other.Entity.Rotation), otherAxes[0]);
+                var four = !CollisionOnAxis(this.Vertices(nextPos, nextRotation), other.Vertices(thatpos, other.Entity.Rotation), otherAxes[1]);
+                point = null;
                 if (one || two || three || four)
                 {
+                    return false;
                 }
                 else
                 {
-                    Debug.WriteLine("COLLISION" + DateTime.Now.Ticks);
+                    return true;
                 }
 
             }

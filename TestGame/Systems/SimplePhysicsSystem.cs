@@ -23,7 +23,7 @@ namespace MyGame.TestGame.Systems
 
         public override void Initialize()
         {
-            forceGenerators.Add(new Gravity(500));
+            //forceGenerators.Add(new Gravity(500));
             //forceGenerators.Add(new Medium(2f));
         }
 
@@ -59,6 +59,23 @@ namespace MyGame.TestGame.Systems
 
                 //TODO: Consider if we need to move translation out of integration ?
                 Integrator.Integrate(accleration, rig);
+
+                var collider = rig.Entity.GetComponent<ColliderComponent>();
+
+                for (int j = 0; j < ColliderComponent.Instances.Count; j++)
+                {
+                    var other = ColliderComponent.Instances[j];
+                    if (collider.Entity == other.Entity)
+                    {
+                        continue;
+                    }
+                    if (collider.CollidesWith(rig.CurrentPosition.ToVector2(), rig.Entity.Rotation, other, out _))
+                    {
+                        //TODO: This is not real physics...
+                        rig.CurrentPosition = rig.Entity.Position;
+                    }
+                }
+
 
                 rig.UpdateEntityPosition();
 

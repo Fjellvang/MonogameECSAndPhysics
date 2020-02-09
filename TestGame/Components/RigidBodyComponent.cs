@@ -40,5 +40,9 @@ namespace MyGame.TestGame.Components
         {
             this.Entity.Position = CurrentPosition;
         }
+        public void AddForce(Vector3 force)
+        {
+            this.ResultantForce = force;
+        }
     }
 }

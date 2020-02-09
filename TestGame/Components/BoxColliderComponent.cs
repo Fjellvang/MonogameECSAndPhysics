@@ -15,7 +15,9 @@ namespace MyGame.TestGame.Components
             Bounds = rectangle;
         }
 
-        public override bool CollidesWith(ColliderComponent collider, out Vector2? point)
+
+
+        public override bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderComponent collider, out Vector2? point)
         {
             throw new NotImplementedException();
         }
