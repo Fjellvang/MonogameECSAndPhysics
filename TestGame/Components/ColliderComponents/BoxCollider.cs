@@ -31,8 +31,6 @@ namespace MyGame.TestGame.Components.ColliderComponents
             var retval = new Vector2[2];
             retval[0] = (Vector2.Transform(vertices[1] - vertices[0], nextRotation)).ToLeftTurnedNormal();
             retval[1] = (Vector2.Transform(vertices[2] - vertices[1], nextRotation)).ToLeftTurnedNormal();
-            //retval[2] = (Vector2.Transform(vertices[3] - vertices[2], this.Entity.Rotation)).ToLeftTurnedNormal();
-            //retval[3] = (Vector2.Transform(vertices[0] - vertices[3], this.Entity.Rotation)).ToLeftTurnedNormal();
             return retval;
         }
 
@@ -43,7 +41,6 @@ namespace MyGame.TestGame.Components.ColliderComponents
                 case BoxCollider other:
                     var axes = this.Normals(nextRotation);
                     var otherAxes = other.Normals(other.Entity.Rotation);
-                    //var thispos = Entity.Position.ToVector2();
                     var thatpos = collider.Entity.Position.ToVector2();
                     for (int i = 0; i < 2; i++)
                     {

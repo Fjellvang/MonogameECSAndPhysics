@@ -26,48 +26,53 @@ namespace MyGame.TestGame.Components.ColliderComponents
 
         public abstract bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderBaseComponent collider, out Vector2? point);
 
+        protected Projection GetProjectionOnAxis(Vector2[] vertices, Vector2 axis)
+        {
+            float min = Vector2.Dot(vertices[0], axis);
+            float max = min;
+            for (int i = 1; i < vertices.Length; i++)
+            {
+                var projection = Vector2.Dot(vertices[i], axis);
+                if (projection < min)
+                {
+                    min = projection;
+                }
+                else if (projection > max)
+                {
+                    max = projection;
+                }
+            }
+            return new Projection(min, max);
+        }
         protected bool CollisionOnAxis(Vector2[] box1Points, Vector2[] box2Points, Vector2 axis)
         {
-            float box1MinDot = Vector2.Dot(box1Points[0], axis);
-            float box1MaxDot = Vector2.Dot(box1Points[0], axis);
+            var proj1 = GetProjectionOnAxis(box1Points, axis);
+            var proj2 = GetProjectionOnAxis(box2Points, axis);
+            return proj1.Overlaps(proj2);
+        }
+    }
+    public struct Projection
+    {
+        private readonly float min;
+        private readonly float max;
 
-            float box2MinDot = Vector2.Dot(box2Points[0], axis);
-            float box2MaxDot = Vector2.Dot(box2Points[0], axis);
-            for (int i = 1; i < box1Points.Length; i++)
-            {
-                var box1Proj = Vector2.Dot(box1Points[i], axis);
-                if (box1Proj < box1MinDot)
-                {
-                    box1MinDot = box1Proj;
-                }
-                else
-                if (box1Proj > box1MaxDot)
-                {
-                    box1MaxDot = box1Proj;
-                }
-            }
-            for (int i = 1; i < box2Points.Length; i++)
-            {
-                var box2Proj = Vector2.Dot(box2Points[i], axis);
-                if (box2Proj < box2MinDot)
-                {
-                    box2MinDot = box2Proj;
-                }
-                else
-                if (box2Proj > box2MaxDot)
-                {
-                    box2MaxDot = box2Proj;
-                }
-            }
-            if ((box1MinDot > box2MaxDot || box2MinDot > box1MaxDot))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+        public Projection(float min, float max)
+        {
+            this.min = min;
+            this.max = max;
         }
 
+        public bool Overlaps(Projection other)
+        {
+            return !(min > other.max || other.min > max);
+        }
+        public float GetOverlap(Projection other)
+        {
+            if (!Overlaps(other))
+            {
+                return 0;
+            }
+            return min - other.max;
+        }
     }
 }
