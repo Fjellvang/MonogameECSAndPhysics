@@ -70,7 +70,7 @@ namespace MyGame.TestGame.Systems
                     comp.color,
                     angle,
                     Vector2.Zero,
-                    new Vector2(distance, 8f),
+                    new Vector2(distance, 1f),
                     SpriteEffects.None,
                     0f
                     );

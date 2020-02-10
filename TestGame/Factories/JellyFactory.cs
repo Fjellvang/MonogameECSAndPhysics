@@ -17,12 +17,12 @@ namespace MyGame.TestGame.Factories
             var entity = new Entity(manager, center);
 
             var pi = Math.PI;
-            var top = new Vector3((float)Math.Cos(pi / 2), (float)Math.Sin(pi / 2), 0) * 2 * scale;
-            var downLeft = new Vector3((float)Math.Cos(pi*5/4), (float)Math.Sin(pi*5/4), 0) * 2 * scale;
-            var downRight = new Vector3((float)Math.Cos(pi*7/4), (float)Math.Sin(pi*7/4), 0) * 2 * scale;
-            new LineRelativeToEntityComponent(entity, top.ToVector2(), downLeft.ToVector2(), color);
-            new LineRelativeToEntityComponent(entity, downLeft.ToVector2(), downRight.ToVector2(), color);
-            new LineRelativeToEntityComponent(entity, downRight.ToVector2(), top.ToVector2(), color);
+            var top = -new Vector3((float)Math.Cos(pi / 2), (float)Math.Sin(pi / 2), 0) * 2 * scale;
+            var downRight = -new Vector3((float)Math.Cos(pi*5/4), (float)Math.Sin(pi*5/4), 0) * 2 * scale;
+            var downLeft = -new Vector3((float)Math.Cos(pi*7/4), (float)Math.Sin(pi*7/4), 0) * 2 * scale;
+            new LineRelativeToEntityComponent(entity, top.ToVector2(), downRight.ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, downRight.ToVector2(), downLeft.ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, downLeft.ToVector2(), top.ToVector2(), color);
             new PlayerInputComponent(entity);
             new PolygonCollider(entity, new Vector2[] { top.ToVector2(), downRight.ToVector2(), downLeft.ToVector2() });
             new RigidBodyComponent(entity, 1, SimulationObjectType.Active);

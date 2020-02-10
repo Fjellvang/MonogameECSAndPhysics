@@ -33,10 +33,9 @@ namespace MyGame.TestGame.Components.ColliderComponents
 
             float box2MinDot = Vector2.Dot(box2Points[0], axis);
             float box2MaxDot = Vector2.Dot(box2Points[0], axis);
-            for (int i = 1; i < 4; i++)
+            for (int i = 1; i < box1Points.Length; i++)
             {
                 var box1Proj = Vector2.Dot(box1Points[i], axis);
-                var box2Proj = Vector2.Dot(box2Points[i], axis);
                 if (box1Proj < box1MinDot)
                 {
                     box1MinDot = box1Proj;
@@ -46,7 +45,10 @@ namespace MyGame.TestGame.Components.ColliderComponents
                 {
                     box1MaxDot = box1Proj;
                 }
-
+            }
+            for (int i = 1; i < box2Points.Length; i++)
+            {
+                var box2Proj = Vector2.Dot(box2Points[i], axis);
                 if (box2Proj < box2MinDot)
                 {
                     box2MinDot = box2Proj;
@@ -57,7 +59,6 @@ namespace MyGame.TestGame.Components.ColliderComponents
                     box2MaxDot = box2Proj;
                 }
             }
-
             if ((box1MinDot > box2MaxDot || box2MinDot > box1MaxDot))
             {
                 return false;
