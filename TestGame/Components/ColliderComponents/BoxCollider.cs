@@ -71,7 +71,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
 
                         if (!proj1.Overlaps(proj2))
                         {
-                            point = null; //todo;
+                            point = null; 
                             return false;
                         }
                         else
@@ -119,44 +119,5 @@ namespace MyGame.TestGame.Components.ColliderComponents
             return true;
         }
 
-        //private bool CollisionOnAxis(Vector2[] box1Points, Vector2[] box2Points, Vector2 axis)
-        //{
-        //    float box1MinDot = Vector2.Dot(box1Points[0], axis);
-        //    float box1MaxDot = Vector2.Dot(box1Points[0], axis);
-
-        //    float box2MinDot = Vector2.Dot(box2Points[0], axis);
-        //    float box2MaxDot = Vector2.Dot(box2Points[0], axis);
-        //    for (int i = 1; i < 4; i++)
-        //    {
-        //        var box1Proj = Vector2.Dot(box1Points[i], axis);
-        //        var box2Proj = Vector2.Dot(box2Points[i], axis);
-        //        if (box1Proj < box1MinDot)
-        //        {
-        //            box1MinDot = box1Proj;
-        //        } else
-        //        if (box1Proj > box1MaxDot)
-        //        {
-        //            box1MaxDot = box1Proj;
-        //        }
-
-        //        if (box2Proj < box2MinDot)
-        //        {
-        //            box2MinDot = box2Proj;
-        //        } else
-        //        if (box2Proj > box2MaxDot)
-        //        {
-        //            box2MaxDot = box2Proj;
-        //        }
-        //    }
-
-        //    if ((box1MinDot > box2MaxDot || box2MinDot > box1MaxDot))
-        //    {
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        return true;
-        //    }
-        //}
     }
 }

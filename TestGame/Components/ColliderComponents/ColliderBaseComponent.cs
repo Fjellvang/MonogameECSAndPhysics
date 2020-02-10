@@ -87,7 +87,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
             {
                 return 0;
             }
-            return min - other.max;
+            return Math.Min(other.max - min, max - other.min);
         }
     }
 }
