@@ -13,7 +13,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
             this.vertices = vertices;
         }
 
-        public override bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderBaseComponent collider, out Vector2? point)
+        public override bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderBaseComponent collider, out MTV? point)
         {
             switch (collider)
             {

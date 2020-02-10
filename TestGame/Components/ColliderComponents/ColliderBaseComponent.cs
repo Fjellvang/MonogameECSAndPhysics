@@ -24,10 +24,11 @@ namespace MyGame.TestGame.Components.ColliderComponents
         }
         public abstract Vector2[] Normals(Matrix nextRotation);
 
-        public abstract bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderBaseComponent collider, out Vector2? point);
+        public abstract bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderBaseComponent collider, out MTV? point);
 
         protected Projection GetProjectionOnAxis(Vector2[] vertices, Vector2 axis)
         {
+            axis.Normalize();
             float min = Vector2.Dot(vertices[0], axis);
             float max = min;
             for (int i = 1; i < vertices.Length; i++)
@@ -50,6 +51,20 @@ namespace MyGame.TestGame.Components.ColliderComponents
             var proj2 = GetProjectionOnAxis(box2Points, axis);
             return proj1.Overlaps(proj2);
         }
+    }
+    /// <summary>
+    /// Minimum translation vector...
+    /// </summary>
+    public struct MTV
+    {
+        public MTV(Vector2 axis, float magnitude)
+        {
+            Axis = axis;
+            Magnitude = magnitude;
+        }
+
+        public Vector2 Axis { get; }
+        public float Magnitude { get; }
     }
     public struct Projection
     {

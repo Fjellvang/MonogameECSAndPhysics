@@ -70,9 +70,10 @@ namespace MyGame.TestGame.Systems
                     {
                         continue;
                     }
-                    if (collider.CollidesWith(rig.CurrentPosition.ToVector2(), rig.Entity.Rotation, other, out _))
+                    if (collider.CollidesWith(rig.CurrentPosition.ToVector2(), rig.Entity.Rotation, other, out var x))
                     {
                         //TODO: This is not real physics...
+                        
                         rig.CurrentPosition = rig.Entity.Position;
                     }
                 }

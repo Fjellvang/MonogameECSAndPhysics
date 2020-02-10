@@ -34,26 +34,58 @@ namespace MyGame.TestGame.Components.ColliderComponents
             return retval;
         }
 
-        public override bool CollidesWith(Vector2 nextPos, Matrix nextRotation, ColliderBaseComponent collider, out Vector2? point)
+        public override bool CollidesWith(Vector2 nextPos, Matrix nextRotation, ColliderBaseComponent collider, out MTV? point)
         {
             switch (collider)
             {
                 case BoxCollider other:
-                    var axes = this.Normals(nextRotation);
+                    var axis = this.Normals(nextRotation);
                     var otherAxes = other.Normals(other.Entity.Rotation);
                     var thatpos = collider.Entity.Position.ToVector2();
+                    float overlap = float.MaxValue;
+                    Vector2 smallestAxes = Vector2.Zero;
                     for (int i = 0; i < 2; i++)
                     {
-                        if (!CollisionOnAxis(this.Vertices(nextPos, nextRotation), other.Vertices(thatpos, other.Entity.Rotation), axes[i])
-                         || !CollisionOnAxis(this.Vertices(nextPos, nextRotation), other.Vertices(thatpos, other.Entity.Rotation), otherAxes[i]))
+                        var verts = this.Vertices(nextPos, nextRotation);
+                        var otherVerts = other.Vertices(thatpos, other.Entity.Rotation);
+                        var proj1 = GetProjectionOnAxis(verts, axis[i]);
+                        var proj2 = GetProjectionOnAxis(otherVerts, axis[i]);
+
+                        if (!proj1.Overlaps(proj2))
                         {
-                            //If just one of the axis returns no collision. well then we dont have one, we can stop computation
-                            point = null;//todo
+                            point = null; //todo;
                             return false;
+                        }
+                        else
+                        {
+                            var o = proj1.GetOverlap(proj2);
+                            if (o < overlap)
+                            {
+                                overlap = o;
+                                smallestAxes = axis[i];
+                            }
+                        }
+
+                        proj1 = GetProjectionOnAxis(verts, otherAxes[i]);
+                        proj2 = GetProjectionOnAxis(otherVerts, otherAxes[i]);
+
+                        if (!proj1.Overlaps(proj2))
+                        {
+                            point = null; //todo;
+                            return false;
+                        }
+                        else
+                        {
+                            var o = proj1.GetOverlap(proj2);
+                            if (o < overlap)
+                            {
+                                overlap = o;
+                                smallestAxes = otherAxes[i];
+                            }
                         }
                     }
                     //No collision returned false. we are colliding
-                    point = null;
+                    point = new MTV(smallestAxes, overlap);
                     return true;
                 case PolygonCollider other:
                     point = null;
