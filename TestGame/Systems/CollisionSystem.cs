@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using MyGame.ECS.Systems;
-using MyGame.TestGame.Components;
+using MyGame.TestGame.Components.ColliderComponents;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,12 +20,12 @@ namespace MyGame.TestGame.Systems
 
         public override void Update(GameTime gameTime)
         {
-            for (int i = 0; i < ColliderComponent.Instances.Count; i++)
+            for (int i = 0; i < ColliderBaseComponent.Instances.Count; i++)
             {
-                var collider = ColliderComponent.Instances[i];
-                for (int j = 0; j < ColliderComponent.Instances.Count; j++)
+                var collider = ColliderBaseComponent.Instances[i];
+                for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
                 {
-                    var other = ColliderComponent.Instances[j];
+                    var other = ColliderBaseComponent.Instances[j];
                     if (collider.Entity == other.Entity)
                     {
                         continue;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using MyGame.ECS.Systems;
 using MyGame.TestGame.Components;
+using MyGame.TestGame.Components.ColliderComponents;
 using MyGame.TestGame.Physics.ForceGenerators;
 using MyGame.TestGame.Physics.Integrators;
 using System;
@@ -60,11 +61,11 @@ namespace MyGame.TestGame.Systems
                 //TODO: Consider if we need to move translation out of integration ?
                 Integrator.Integrate(accleration, rig);
 
-                var collider = rig.Entity.GetComponent<ColliderComponent>();
+                var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
 
-                for (int j = 0; j < ColliderComponent.Instances.Count; j++)
+                for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
                 {
-                    var other = ColliderComponent.Instances[j];
+                    var other = ColliderBaseComponent.Instances[j];
                     if (collider.Entity == other.Entity)
                     {
                         continue;
