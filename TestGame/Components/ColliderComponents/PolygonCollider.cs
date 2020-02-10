@@ -40,9 +40,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
                     point = null;
                     return true;
                 case BoxCollider other:
-                    point = null;
-                    return other.CollisionBoxToPolygon(this, other, nextPosition, nextRotation, other.Entity.Position.ToVector2(), other.Entity.Rotation);
-                    break;
+                    return other.CollisionBoxToPolygon(this, other, nextPosition, nextRotation, other.Entity.Position.ToVector2(), other.Entity.Rotation, out point);
             }
             point = null;
             return false;

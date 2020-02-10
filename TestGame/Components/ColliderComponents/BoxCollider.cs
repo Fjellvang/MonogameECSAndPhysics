@@ -31,20 +31,22 @@ namespace MyGame.TestGame.Components.ColliderComponents
             var retval = new Vector2[2];
             retval[0] = (Vector2.Transform(vertices[1] - vertices[0], nextRotation)).ToLeftTurnedNormal();
             retval[1] = (Vector2.Transform(vertices[2] - vertices[1], nextRotation)).ToLeftTurnedNormal();
+            //retval[1] = (Vector2.Transform(vertices[3] - vertices[2], nextRotation)).ToLeftTurnedNormal();
+            //retval[1] = (Vector2.Transform(vertices[0] - vertices[3], nextRotation)).ToLeftTurnedNormal();
             return retval;
         }
 
         public override bool CollidesWith(Vector2 nextPos, Matrix nextRotation, ColliderBaseComponent collider, out MTV? point)
         {
+            Vector2 smallestAxes = Vector2.Zero;
+            float overlap = float.MaxValue;
             switch (collider)
             {
                 case BoxCollider other:
                     var axis = this.Normals(nextRotation);
                     var otherAxes = other.Normals(other.Entity.Rotation);
                     var thatpos = collider.Entity.Position.ToVector2();
-                    float overlap = float.MaxValue;
-                    Vector2 smallestAxes = Vector2.Zero;
-                    for (int i = 0; i < 2; i++)
+                    for (int i = 0; i < axis.Length; i++)
                     {
                         var verts = this.Vertices(nextPos, nextRotation);
                         var otherVerts = other.Vertices(thatpos, other.Entity.Rotation);
@@ -88,8 +90,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
                     point = new MTV(smallestAxes, overlap);
                     return true;
                 case PolygonCollider other:
-                    point = null;
-                    return CollisionBoxToPolygon(other, this, other.Entity.Position.ToVector2(), other.Entity.Rotation, nextPos, nextRotation);
+                    return CollisionBoxToPolygon(other, this, other.Entity.Position.ToVector2(), other.Entity.Rotation, nextPos, nextRotation, out point);
                 default:
                     break;
             }
@@ -97,25 +98,52 @@ namespace MyGame.TestGame.Components.ColliderComponents
             return false;
         }
         public bool CollisionBoxToPolygon(
-            PolygonCollider polygonCollider, BoxCollider boxCollider, Vector2 polygondNextPos, Matrix polygonNextRotation, Vector2 boxNextPos, Matrix BoxNextRot)
+            PolygonCollider polygonCollider, BoxCollider boxCollider, Vector2 polygondNextPos, Matrix polygonNextRotation, Vector2 boxNextPos, Matrix BoxNextRot, out MTV? mtv)
         {
             var polygonAxes = polygonCollider.Normals(polygonNextRotation);
             var boxNormals = boxCollider.Normals(polygonNextRotation);
-            //var thispos = Entity.Position.ToVector2();
+            Vector2 smallestAxes = Vector2.Zero;
+            float overlap = float.MaxValue;
             for (int i = 0; i < polygonAxes.Length; i++)
             {
-                if (!CollisionOnAxis(polygonCollider.Vertices(polygondNextPos, polygonNextRotation), boxCollider.Vertices(boxNextPos, BoxNextRot), polygonAxes[i]))
+                var proj1 = GetProjectionOnAxis(polygonCollider.Vertices(polygondNextPos, polygonNextRotation), polygonAxes[i]);
+                var proj2 = GetProjectionOnAxis(boxCollider.Vertices(boxNextPos, BoxNextRot), polygonAxes[i]);
+                if (!proj1.Overlaps(proj2))
                 {
+                    mtv = null;
                     return false;
+                }
+                else
+                {
+                    var o = proj1.GetOverlap(proj2);
+                    if (o < overlap)
+                    {
+                        overlap = o;
+                        smallestAxes = polygonAxes[i];
+                    }
                 }
             }
             for (int i = 0; i < boxNormals.Length; i++)
             {
-                if (!CollisionOnAxis(polygonCollider.Vertices(polygondNextPos, polygonNextRotation), boxCollider.Vertices(boxNextPos, BoxNextRot), boxNormals[i]))
+
+                var proj1 = GetProjectionOnAxis(polygonCollider.Vertices(polygondNextPos, polygonNextRotation), boxNormals[i]);
+                var proj2 = GetProjectionOnAxis(boxCollider.Vertices(boxNextPos, BoxNextRot), boxNormals[i]);
+                if (!proj1.Overlaps(proj2))
                 {
+                    mtv = null;
                     return false;
                 }
+                else
+                {
+                    var o = proj1.GetOverlap(proj2);
+                    if (o < overlap)
+                    {
+                        overlap = o;
+                        smallestAxes = boxNormals[i];
+                    }
+                }
             }
+            mtv = new MTV(smallestAxes, overlap);
             return true;
         }
 
