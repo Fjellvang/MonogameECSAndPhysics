@@ -44,5 +44,9 @@ namespace MyGame.TestGame.Components
         {
             this.ResultantForce = Vector3.Transform(force, this.Entity.Rotation);
         }
+        public void AddForce(Vector3 force)
+        {
+            this.ResultantForce = force;
+        }
     }
 }

@@ -79,10 +79,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
             {
                 clippedPoints.Remove(val1);
             }
-            //for (int i = 0; i < clippedPoints.Count; i++)
-            //{
-            //    clippedPoints[i] = this.Entity.Position.ToVector2() + clippedPoints[i];
-            //}
+
             return clippedPoints;
         }
 
@@ -114,12 +111,12 @@ namespace MyGame.TestGame.Components.ColliderComponents
             }
             return clippedPoints;
         }
-        public Edge FindBestCollisionEdge(Vector2 axis)
+        public Edge FindBestCollisionEdge(Vector2 axis, Vector2 nextPostion)
         {
             int length = vertices.Length;//TODO: do we need vertices in worldspacce??? Probably not.
             var max = float.MinValue;
             var index = -1;
-            var vert = this.Vertices(this.Entity.Position.ToVector2(), this.Entity.Rotation);
+            var vert = this.Vertices(nextPostion, this.Entity.Rotation);
 
             // get the farthest point
             for (int i = 0; i < length; i++)

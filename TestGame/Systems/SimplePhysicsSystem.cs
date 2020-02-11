@@ -13,6 +13,7 @@ namespace MyGame.TestGame.Systems
     {
         float toSpawn = 2.0f;
         float spawned = 0;
+        float spawned2 = 0;
         //TODO: find better soultion
         List<IForceGenerator> forceGenerators = new List<IForceGenerator>();
         public Integrator Integrator{ get; set; }
@@ -74,12 +75,13 @@ namespace MyGame.TestGame.Systems
                     {
                         //TODO: This is not real physics...
 
-                        var test = collider.FindBestCollisionEdge(x.Value.Axis);
-                        var test2 = other.FindBestCollisionEdge(-x.Value.Axis);
-                        var points = collider.CalculateContactManifold(test, test2, x.Value.Axis);
-                        if (points.Count>=2)
+                        var A = collider.FindBestCollisionEdge(x.Value.Axis, (rig.CurrentPosition).ToVector2());
+                        var B = other.FindBestCollisionEdge(-x.Value.Axis, other.Entity.Position.ToVector2());
+                        var points = collider.CalculateContactManifold(A, B, x.Value.Axis);
+
+                        if (points.Count >= 2)
                         {
-                            var middle = points[0] + (points[1] - points[0])*.5f;
+                            var middle = points[0] + (points[1] - points[0]) * .5f;
                             if (this.spawned <= 0f)
                             {
                                 this.spawned = toSpawn;
@@ -87,12 +89,23 @@ namespace MyGame.TestGame.Systems
                                 JellyFactory.CreateNonCollidingCube(new Vector3(middle, 0), this.Manager, 10, Color.Green);
                                 JellyFactory.CreateNonCollidingCube(new Vector3(points[1], 0), this.Manager, 10, Color.Blue);
                             }
+                            rig.CurrentPosition = rig.Entity.Position;
+                        }
+                        if (points.Count == 1)
+                        {
+                            if (this.spawned <= 0f)
+                            {
+                                this.spawned = toSpawn;
+                                JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Chartreuse);
+                            }
+                            rig.CurrentPosition = rig.Entity.Position;
                         }
                         rig.CurrentPosition = rig.Entity.Position;
                     }
                 }
 
                 spawned -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                spawned2 -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 rig.UpdateEntityPosition();
 
