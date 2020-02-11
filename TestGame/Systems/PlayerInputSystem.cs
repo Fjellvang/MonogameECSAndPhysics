@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Input;
 using MyGame.ECS.Systems;
 using MyGame.TestGame.Components;
+using MyGame.TestGame.Components.ColliderComponents;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -48,22 +49,22 @@ namespace MyGame.TestGame.Systems
                 if (state.IsKeyDown(Keys.A))
                 {
                     translationVector -= new Vector3(0.1f, 0, 0) * speed;
-                    rig.AddForce(Vector3.Left * speed);
+                    rig.AddRelativeForce(Vector3.Left * speed);
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
                     translationVector += new Vector3(0.1f, 0, 0) * speed;
-                    rig.AddForce(Vector3.Right * speed);
-                }
-                if (state.IsKeyDown(Keys.S))
-                {
-                    translationVector += new Vector3(0, 0.1f, 0) * speed;
-                    rig.AddForce(Vector3.Down * speed);
+                    rig.AddRelativeForce(Vector3.Right * speed);
                 }
                 if (state.IsKeyDown(Keys.W))
                 {
+                    translationVector += new Vector3(0, 0.1f, 0) * speed;
+                    rig.AddRelativeForce(Vector3.Down * speed);
+                }
+                if (state.IsKeyDown(Keys.S))
+                {
                     translationVector -= new Vector3(0, 0.1f, 0) * speed;
-                    rig.AddForce(Vector3.Up * speed);
+                    rig.AddRelativeForce(Vector3.Up * speed);
                 }
                 if (state.IsKeyDown(Keys.Q))
                 {
@@ -76,29 +77,29 @@ namespace MyGame.TestGame.Systems
                 var nextPos = comp.Entity.Position + Vector3.Transform(translationVector, comp.Entity.Rotation);
                 var nextRotation = Matrix.CreateRotationZ(newAngle);
 
-                //var collider = comp.Entity.GetComponent<BoxCollider>();
-                //if (collider != null)
-                //{
-                //    for (int j = 0; j < ColliderComponent.Instances.Count; j++)
-                //    {
-                //        var other = ColliderComponent.Instances[j];
-                //        if (collider.Entity == other.Entity)
-                //        {
-                //            continue;
-                //        }
-                //        if (collider.CollidesWith(nextPos.ToVector2(), nextRotation, other, out _))
-                //        {
-                //            nextPos = comp.Entity.Position;
-                //            nextRotation = comp.Entity.Rotation;
-                //            newAngle = angle;
-                //        }
-                //    }
-                //}
+                var collider = comp.Entity.GetComponent<BoxCollider>();
+                if (collider != null)
+                {
+                    for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
+                    {
+                        var other = ColliderBaseComponent.Instances[j];
+                        if (collider.Entity == other.Entity)
+                        {
+                            continue;
+                        }
+                        if (collider.CollidesWith(nextPos.ToVector2(), nextRotation, other, out _))
+                        {
+                            nextPos = comp.Entity.Position;
+                            nextRotation = comp.Entity.Rotation;
+                            newAngle = angle;
+                        }
+                    }
+                }
 
                 angle = newAngle;
-                //comp.Entity.Rotation = nextRotation;
+                comp.Entity.Rotation = nextRotation;
                 //comp.Entity.Position = nextPos;
-                
+
 
 
 

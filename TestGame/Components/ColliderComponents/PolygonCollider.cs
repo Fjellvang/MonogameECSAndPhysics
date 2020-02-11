@@ -15,6 +15,8 @@ namespace MyGame.TestGame.Components.ColliderComponents
 
         public override bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderBaseComponent collider, out MTV? point)
         {
+            point = null;
+            var colliding = false;
             switch (collider)
             {
                 case PolygonCollider other:
@@ -37,12 +39,23 @@ namespace MyGame.TestGame.Components.ColliderComponents
                             return false;
                         }
                     }
-                    point = null;
-                    return true;
+                    colliding = true;
+                    throw new NotImplementedException();
+                    //TODO:set point
+                    point = new MTV();
+                    break;
                 case BoxCollider other:
-                    return other.CollisionBoxToPolygon(this, other, nextPosition, nextRotation, other.Entity.Position.ToVector2(), other.Entity.Rotation, out point);
+                    colliding = other.CollisionBoxToPolygon(this, other, nextPosition, nextRotation, other.Entity.Position.ToVector2(), other.Entity.Rotation, out point);
+                    break;
             }
-            point = null;
+            if (colliding)
+            {
+                //TODO: refactor this bad shiet.
+                var delta = collider.Entity.Position - this.Entity.Position;
+                var dot = Vector2.Dot(point.Value.Axis, delta.ToVector2());
+                point = new MTV(point.Value.Axis * Math.Sign(dot), point.Value.Magnitude);
+            }
+            return colliding;
             return false;
         }
 

@@ -2,23 +2,23 @@
 using MyGame.ECS.Systems;
 using MyGame.TestGame.Components;
 using MyGame.TestGame.Components.ColliderComponents;
+using MyGame.TestGame.Factories;
 using MyGame.TestGame.Physics.ForceGenerators;
 using MyGame.TestGame.Physics.Integrators;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MyGame.TestGame.Systems
 {
     public class SimplePhysicsSystem : BaseSystem
     {
-        Rectangle bounds; //TODO: find something better
+        float toSpawn = 2.0f;
+        float spawned = 0;
         //TODO: find better soultion
         List<IForceGenerator> forceGenerators = new List<IForceGenerator>();
         public Integrator Integrator{ get; set; }
         public SimplePhysicsSystem(IManager manager, Rectangle? bounds, Integrator integrator) : base(manager)
         {
-            this.bounds = bounds ?? new Rectangle(0, 0, 1280, 1280);
+            //this.bounds = bounds ?? new Rectangle(0, 0, 1280, 1280);
             Integrator = integrator;
         }
 
@@ -73,11 +73,24 @@ namespace MyGame.TestGame.Systems
                     if (collider.CollidesWith(rig.CurrentPosition.ToVector2(), rig.Entity.Rotation, other, out var x))
                     {
                         //TODO: This is not real physics...
-                        
+
+                        var test = collider.FindBestCollisionEdge(x.Value.Axis);
+                        var test2 = other.FindBestCollisionEdge(-x.Value.Axis);
+                        var points = collider.CalculateContactManifold(test, test2, x.Value.Axis);
+                        if (points.Count>=2)
+                        {
+                            var middle =rig.Entity.Position.ToVector2() + (points[1] - points[0]);
+                            if (this.spawned <= 0f)
+                            {
+                                this.spawned = toSpawn;
+                                JellyFactory.CreateNonCollidingCube(new Vector3(middle, 0), this.Manager, 10, Color.Red);
+                            }
+                        }
                         rig.CurrentPosition = rig.Entity.Position;
                     }
                 }
 
+                spawned -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 rig.UpdateEntityPosition();
 

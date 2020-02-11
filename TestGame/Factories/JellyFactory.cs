@@ -38,7 +38,7 @@ namespace MyGame.TestGame.Factories
             new RigidBodyComponent(entity, 1, SimulationObjectType.Active);
             return entity;
         }
-        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        public static IEntity CreateNonCollidingCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
         {
             var entity = new Entity(manager, center);
             var width = Vector3.Right * scale;
@@ -47,6 +47,13 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, width.ToVector2(), (width + height).ToVector2(), color);
             new LineRelativeToEntityComponent(entity, (width + height).ToVector2(), height.ToVector2(), color);
             new LineRelativeToEntityComponent(entity, height.ToVector2(), Vector2.Zero, color);
+            return entity;
+        }
+        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        {
+            var entity = CreateNonCollidingCube(center, manager, scale, color);
+            var width = Vector3.Right * scale;
+            var height = Vector3.Up * scale;
             new BoxCollider(entity, width.ToVector2(), height.ToVector2());
             return entity;
         }

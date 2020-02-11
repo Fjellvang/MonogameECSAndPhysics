@@ -40,6 +40,8 @@ namespace MyGame.TestGame.Components.ColliderComponents
         {
             Vector2 smallestAxes = Vector2.Zero;
             float overlap = float.MaxValue;
+            var colliding = false;
+            point = null;
             switch (collider)
             {
                 case BoxCollider other:
@@ -88,14 +90,22 @@ namespace MyGame.TestGame.Components.ColliderComponents
                     }
                     //No collision returned false. we are colliding
                     point = new MTV(smallestAxes, overlap);
-                    return true;
+                    colliding = true;
+                    break;
                 case PolygonCollider other:
-                    return CollisionBoxToPolygon(other, this, other.Entity.Position.ToVector2(), other.Entity.Rotation, nextPos, nextRotation, out point);
+                    colliding = CollisionBoxToPolygon(other, this, other.Entity.Position.ToVector2(), other.Entity.Rotation, nextPos, nextRotation, out point);
+                    break;
                 default:
                     break;
             }
-            point = null;
-            return false;
+            if (colliding)
+            {
+                //TODO: refactor this bad shiet.
+                var delta = collider.Entity.Position - this.Entity.Position;
+                var dot = Vector2.Dot(point.Value.Axis, delta.ToVector2());
+                point = new MTV(point.Value.Axis * Math.Sign(dot), point.Value.Magnitude);
+            }
+            return colliding;
         }
         public bool CollisionBoxToPolygon(
             PolygonCollider polygonCollider, BoxCollider boxCollider, Vector2 polygondNextPos, Matrix polygonNextRotation, Vector2 boxNextPos, Matrix BoxNextRot, out MTV? mtv)
