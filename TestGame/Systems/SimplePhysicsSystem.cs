@@ -79,11 +79,12 @@ namespace MyGame.TestGame.Systems
                         var points = collider.CalculateContactManifold(test, test2, x.Value.Axis);
                         if (points.Count>=2)
                         {
-                            var middle =rig.Entity.Position.ToVector2() + (points[1] - points[0]);
+                            //var middle =rig.Entity.Position.ToVector2() + (points[1] - points[0]);
                             if (this.spawned <= 0f)
                             {
                                 this.spawned = toSpawn;
-                                JellyFactory.CreateNonCollidingCube(new Vector3(middle, 0), this.Manager, 10, Color.Red);
+                                JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Red);
+                                JellyFactory.CreateNonCollidingCube(new Vector3(points[1], 0), this.Manager, 10, Color.Blue);
                             }
                         }
                         rig.CurrentPosition = rig.Entity.Position;
