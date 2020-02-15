@@ -15,6 +15,7 @@ namespace MyGame.TestGame.Components
         //public Vector2 Acceleration { get; set; }
         //public SimulationObject SimulationObject { get; set; }
         public float Mass { get; set; }
+        public Vector3 CenterOfMass { get; set; }
         public SimulationObjectType ObjectType { get; set; }
         public Vector3 PreviousPosition { get; set; }
         public Vector3 CurrentPosition { get; set; }
@@ -23,13 +24,14 @@ namespace MyGame.TestGame.Components
         /// All forces acting on the object summed up.
         /// </summary>
         public Vector3 ResultantForce { get; set; }
-        public RigidBodyComponent(IEntity entity, float mass, SimulationObjectType objectType) : base(entity)
+        public RigidBodyComponent(IEntity entity, float mass, Vector3 center, SimulationObjectType objectType) : base(entity)
         {
             this.Mass = mass;
             this.ObjectType = objectType;
             CurrentPosition = entity.Position;
             PreviousPosition = entity.Position;
             CurrentVelocity = Vector3.Zero;
+            this.CenterOfMass = center;
         }
 
         public void ResetForces()

@@ -61,7 +61,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
                 return clippedPoints; //TODO: Should be null?
             }
 
-            var referenceNormal = refv.ToRightTurnedNormal();
+            var referenceNormal = refv.ToLeftTurnedNormal();
             if (flip)
             {
                 referenceNormal *= -1;
