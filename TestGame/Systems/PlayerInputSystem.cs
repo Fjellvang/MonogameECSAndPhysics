@@ -70,13 +70,13 @@ namespace MyGame.TestGame.Systems
                 {
                     var angle = angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     rig.AddAngularForce(angle);
-                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector2.UnitX * 1f));
+                    //rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector2.UnitX * 1f));
                 }else
                 if (state.IsKeyDown(Keys.E))
                 {
                     var angle = -angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     rig.AddAngularForce(angle);
-                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector2.UnitX * -1f));
+                    //rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector2.UnitX * -1f));
                 }
                 //var nextPos = comp.Entity.Position + Vector3.Transform(translationVector, comp.Entity.Rotation);
                 //var nextRotation = Matrix.CreateRotationZ(newAngle);

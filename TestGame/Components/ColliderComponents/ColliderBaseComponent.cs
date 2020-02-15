@@ -64,6 +64,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
             var referenceNormal = refv.ToLeftTurnedNormal();
             if (flip)
             {
+                referenceNormal = refv.ToRightTurnedNormal();
                 referenceNormal *= -1;
             }
 

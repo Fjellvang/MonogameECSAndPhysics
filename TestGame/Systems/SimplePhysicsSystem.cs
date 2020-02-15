@@ -108,6 +108,7 @@ namespace MyGame.TestGame.Systems
                         rig.CurrentPosition = rig.PreviousPosition;
                         rig.CurrentAngle = rig.PreviousAngle;
                         rig.CurrentAngularVelocity = 0;
+                        rig.CurrentVelocity = Vector2.Zero;
                         rig.NextRotation = Matrix.CreateRotationZ(rig.PreviousAngle);
                     }
                 }
