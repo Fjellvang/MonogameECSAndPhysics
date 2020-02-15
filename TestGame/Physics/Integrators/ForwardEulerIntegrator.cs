@@ -12,7 +12,7 @@ namespace MyGame.TestGame.Physics.Integrators
         {
         }
 
-        public override void Integrate(Vector3 acceleration,float angularAcceleration, RigidBodyComponent simulationObject)
+        public override void Integrate(Vector2 acceleration,float angularAcceleration, RigidBodyComponent simulationObject)
         {
             simulationObject.PreviousPosition = simulationObject.CurrentPosition;
             simulationObject.CurrentPosition += simulationObject.CurrentVelocity * FixedTimeStep;

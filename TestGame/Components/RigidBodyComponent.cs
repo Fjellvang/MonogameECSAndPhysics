@@ -15,15 +15,15 @@ namespace MyGame.TestGame.Components
         //public Vector2 Acceleration { get; set; }
         //public SimulationObject SimulationObject { get; set; }
         public float Mass { get; set; }
-        public Vector3 CenterOfMass { get; set; }
+        public Vector2 CenterOfMass { get; set; }
         public SimulationObjectType ObjectType { get; set; }
-        public Vector3 PreviousPosition { get; set; }
-        public Vector3 CurrentPosition { get; set; }
-        public Vector3 CurrentVelocity { get; set; }
+        public Vector2 PreviousPosition { get; set; }
+        public Vector2 CurrentPosition { get; set; }
+        public Vector2 CurrentVelocity { get; set; }
         /// <summary>
         /// All forces acting on the object summed up.
         /// </summary>
-        public Vector3 ResultantForce { get; set; }
+        public Vector2 ResultantForce { get; set; }
 
         public float PreviousAngle { get; set; }
         public float CurrentAngle { get; set; }
@@ -31,38 +31,38 @@ namespace MyGame.TestGame.Components
         public float ResultantAngularForce { get; set; }
         public Matrix NextRotation { get; set; } //TODO: finde something better????
 
-        public RigidBodyComponent(IEntity entity, float mass, Vector3 center, SimulationObjectType objectType) : base(entity)
+        public RigidBodyComponent(IEntity entity, float mass, Vector2 center, SimulationObjectType objectType) : base(entity)
         {
             this.Mass = mass;
             this.ObjectType = objectType;
-            CurrentPosition = entity.Position;
-            PreviousPosition = entity.Position;
-            CurrentVelocity = Vector3.Zero;
+            CurrentPosition = entity.Position.ToVector2();
+            PreviousPosition = entity.Position.ToVector2();
+            CurrentVelocity = Vector2.Zero;
             this.CenterOfMass = center;
         }
 
         public void ResetForces()
         {
-            this.ResultantForce = Vector3.Zero;
+            this.ResultantForce = Vector2.Zero;
             this.ResultantAngularForce = 0f;
         }
         public void UpdateEntityPosition()
         {
-            this.Entity.Position = CurrentPosition;
+            this.Entity.Position = new Vector3(CurrentPosition, 0);
             this.Entity.Rotation = Matrix.CreateRotationZ(CurrentAngle);
         }
-        public void AddRelativeForce(Vector3 force)
+        public void AddRelativeForce(Vector2 force)
         {
-            this.ResultantForce += Vector3.Transform(force, this.Entity.Rotation);
+            this.ResultantForce += Vector2.Transform(force, this.Entity.Rotation);
         }
-        public void AddForce(Vector3 force)
+        public void AddForce(Vector2 force)
         {
             this.ResultantForce += force;
         }
         public void AddForceAtPoint(Vector2 force, Vector2 point)
         {
-            var torqu = (point - this.CenterOfMass.ToVector2()).Cross(force);
-            this.ResultantForce += new Vector3(force, 0);
+            var torqu = (point - this.CenterOfMass).Cross(force);
+            this.ResultantForce += force;
             //Toque cannot be angular force?!
             this.ResultantAngularForce += torqu;
 

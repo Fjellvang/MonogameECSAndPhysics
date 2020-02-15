@@ -31,7 +31,7 @@ namespace MyGame.TestGame.Physics.Integrators
             Drag = drag;
         }
 
-        public override void Integrate(Vector3 acceleration, float angularAcceleraion, RigidBodyComponent simulationObject)
+        public override void Integrate(Vector2 acceleration, float angularAcceleraion, RigidBodyComponent simulationObject)
         {
             var newPos = (2 - drag) * simulationObject.CurrentPosition
                 - (1 - drag) * simulationObject.PreviousPosition

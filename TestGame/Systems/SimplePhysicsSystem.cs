@@ -74,11 +74,11 @@ namespace MyGame.TestGame.Systems
                     {
                         continue;
                     }
-                    if (collider.CollidesWith(rig.CurrentPosition.ToVector2(), rig.NextRotation, other, out var x))
+                    if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var x))
                     {
                         //TODO: This is not real physics...
 
-                        var A = collider.FindBestCollisionEdge(x.Value.Axis, (rig.CurrentPosition).ToVector2());
+                        var A = collider.FindBestCollisionEdge(x.Value.Axis, (rig.CurrentPosition));
                         var B = other.FindBestCollisionEdge(-x.Value.Axis, other.Entity.Position.ToVector2());
                         var points = collider.CalculateContactManifold(A, B, x.Value.Axis);
 

@@ -49,34 +49,34 @@ namespace MyGame.TestGame.Systems
                 if (state.IsKeyDown(Keys.A))
                 {
                     translationVector -= new Vector3(0.1f, 0, 0) * speed;
-                    rig.AddForce(Vector3.Left * speed);
+                    rig.AddForce(-Vector2.UnitX * speed);
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
                     translationVector += new Vector3(0.1f, 0, 0) * speed;
-                    rig.AddForce(Vector3.Right * speed);
+                    rig.AddForce(Vector2.UnitX * speed);
                 }
                 if (state.IsKeyDown(Keys.W))
                 {
                     translationVector += new Vector3(0, 0.1f, 0) * speed;
-                    rig.AddForce(Vector3.Down * speed);
+                    rig.AddForce(-Vector2.UnitY * speed);
                 }
                 if (state.IsKeyDown(Keys.S))
                 {
                     translationVector -= new Vector3(0, 0.1f, 0) * speed;
-                    rig.AddForce(Vector3.Up * speed);
+                    rig.AddForce(Vector2.UnitY * speed);
                 }
                 if (state.IsKeyDown(Keys.Q))
                 {
                     var angle = angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     rig.AddAngularForce(angle);
-                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector3.Left * 1f).ToVector2());
+                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector2.UnitX * 1f));
                 }else
                 if (state.IsKeyDown(Keys.E))
                 {
                     var angle = -angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     rig.AddAngularForce(angle);
-                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector3.Right * 1f).ToVector2());
+                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector2.UnitX * -1f));
                 }
                 //var nextPos = comp.Entity.Position + Vector3.Transform(translationVector, comp.Entity.Rotation);
                 //var nextRotation = Matrix.CreateRotationZ(newAngle);

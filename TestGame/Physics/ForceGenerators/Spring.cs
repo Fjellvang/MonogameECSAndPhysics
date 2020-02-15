@@ -44,8 +44,8 @@ namespace MyGame.TestGame.Physics.ForceGenerators
 
         public void ApplyForce(RigidBodyComponent simulationObject)
         {
-            var direction = SimulationObjectA.Entity.Position - SimulationObjectB.Entity.Position;
-            if (direction != Vector3.Zero)
+            var direction = (SimulationObjectA.Entity.Position - SimulationObjectB.Entity.Position).ToVector2();
+            if (direction != Vector2.Zero)
             {
                 var currentLength = direction.Length();
                 direction.Normalize();
@@ -53,7 +53,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
                 var force = -Stiffness * ((currentLength - RestLength) * direction);
 
                 //add spring damping force
-                var addition = -Damping * Vector3.Dot(SimulationObjectA.CurrentVelocity - SimulationObjectB.CurrentVelocity, direction) * direction;
+                var addition = -Damping * Vector2.Dot(SimulationObjectA.CurrentVelocity - SimulationObjectB.CurrentVelocity, direction) * direction;
                 force += addition;
 
                 SimulationObjectA.ResultantForce += force;
