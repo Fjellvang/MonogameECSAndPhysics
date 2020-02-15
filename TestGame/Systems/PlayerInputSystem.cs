@@ -97,6 +97,7 @@ namespace MyGame.TestGame.Systems
                 }
 
                 angle = newAngle;
+
                 comp.Entity.Rotation = nextRotation;
                 //comp.Entity.Position = nextPos;
 

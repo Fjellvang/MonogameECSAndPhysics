@@ -14,10 +14,11 @@ namespace MyGame.TestGame.Components.ColliderComponents
         {
             Width = width;
             Height = height;
-            var V0 = Vector2.Zero;
-            var V1 = width;
-            var V2 = width + height;
-            var V3 = height;
+            var half = width / 2 + height / 2;
+            var V0 = Vector2.Zero - half;
+            var V1 = width - half;
+            var V2 = width + height - half;
+            var V3 = height - half;
             Center = new Vector2((width * .5f).Length(), (height * .5f).Length());
             vertices = new Vector2[] { V0, V1, V2, V3 };
         }

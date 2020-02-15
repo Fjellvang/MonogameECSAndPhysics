@@ -43,10 +43,13 @@ namespace MyGame.TestGame.Factories
             var entity = new Entity(manager, center);
             var width = Vector3.Right * scale;
             var height = Vector3.Up * scale;
-            new LineRelativeToEntityComponent(entity, Vector2.Zero, width.ToVector2(), color);
-            new LineRelativeToEntityComponent(entity, width.ToVector2(), (width + height).ToVector2(), color);
-            new LineRelativeToEntityComponent(entity, (width + height).ToVector2(), height.ToVector2(), color);
-            new LineRelativeToEntityComponent(entity, height.ToVector2(), Vector2.Zero, color);
+            var halfwidth = (width / 2).ToVector2();
+            var halfheight = (height / 2).ToVector2();
+            var half = halfwidth + halfheight;
+            new LineRelativeToEntityComponent(entity, Vector2.Zero - (half), width.ToVector2() - (half), color);
+            new LineRelativeToEntityComponent(entity, width.ToVector2() - half, (width * 0.5f + height * 0.5f).ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, (width + height).ToVector2() - half, height.ToVector2() - half, color);
+            new LineRelativeToEntityComponent(entity, height.ToVector2() - half, Vector2.Zero - half, color);
             return entity;
         }
         public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
