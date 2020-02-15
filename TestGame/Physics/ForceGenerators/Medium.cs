@@ -22,6 +22,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
         public void ApplyForce(RigidBodyComponent simulationObject)
         {
             simulationObject.ResultantForce += -DragCoefficient * simulationObject.CurrentVelocity;
+            simulationObject.ResultantAngularForce += -DragCoefficient * simulationObject.CurrentAngularVelocity;
         }
     }
 }

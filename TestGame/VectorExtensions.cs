@@ -16,6 +16,10 @@ namespace MyGame.TestGame
         {
             return new Vector2(vec.Y * scalar, vec.X * -scalar);
         }
+        public static float Cross(this Vector2 a, Vector2 b)
+        {
+            return a.X * b.Y - a.Y * b.X;
+        }
 
         public static float Dot(this Vector2 thisVec, Vector2 thatVec)
         {

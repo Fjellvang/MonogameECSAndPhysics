@@ -11,7 +11,7 @@ namespace MyGame.TestGame.Systems
 {
     public class PlayerInputSystem : BaseSystem
     {
-        float angleRotationalSpeed = 2f;
+        float angleRotationalSpeed = 50;
         float angle = 0;
         float speed = 100;
         float origspeed;
@@ -49,56 +49,60 @@ namespace MyGame.TestGame.Systems
                 if (state.IsKeyDown(Keys.A))
                 {
                     translationVector -= new Vector3(0.1f, 0, 0) * speed;
-                    rig.AddRelativeForce(Vector3.Left * speed);
+                    rig.AddForce(Vector3.Left * speed);
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
                     translationVector += new Vector3(0.1f, 0, 0) * speed;
-                    rig.AddRelativeForce(Vector3.Right * speed);
+                    rig.AddForce(Vector3.Right * speed);
                 }
                 if (state.IsKeyDown(Keys.W))
                 {
                     translationVector += new Vector3(0, 0.1f, 0) * speed;
-                    rig.AddRelativeForce(Vector3.Down * speed);
+                    rig.AddForce(Vector3.Down * speed);
                 }
                 if (state.IsKeyDown(Keys.S))
                 {
                     translationVector -= new Vector3(0, 0.1f, 0) * speed;
-                    rig.AddRelativeForce(Vector3.Up * speed);
+                    rig.AddForce(Vector3.Up * speed);
                 }
                 if (state.IsKeyDown(Keys.Q))
                 {
-                    newAngle += angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    var angle = angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    rig.AddAngularForce(angle);
+                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector3.Left * 1f).ToVector2());
                 }else
                 if (state.IsKeyDown(Keys.E))
                 {
-                    newAngle -= angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    var angle = -angleRotationalSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    rig.AddAngularForce(angle);
+                    rig.AddForceAtPoint(Vector2.UnitY * speed, (rig.CenterOfMass + Vector3.Right * 1f).ToVector2());
                 }
-                var nextPos = comp.Entity.Position + Vector3.Transform(translationVector, comp.Entity.Rotation);
-                var nextRotation = Matrix.CreateRotationZ(newAngle);
+                //var nextPos = comp.Entity.Position + Vector3.Transform(translationVector, comp.Entity.Rotation);
+                //var nextRotation = Matrix.CreateRotationZ(newAngle);
 
-                var collider = comp.Entity.GetComponent<BoxCollider>();
-                if (collider != null)
-                {
-                    for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
-                    {
-                        var other = ColliderBaseComponent.Instances[j];
-                        if (collider.Entity == other.Entity)
-                        {
-                            continue;
-                        }
-                        if (collider.CollidesWith(nextPos.ToVector2(), nextRotation, other, out _))
-                        {
-                            nextPos = comp.Entity.Position;
-                            nextRotation = comp.Entity.Rotation;
-                            newAngle = angle;
-                        }
-                    }
-                }
+                //var collider = comp.Entity.GetComponent<BoxCollider>();
+                //if (collider != null)
+                //{
+                //    for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
+                //    {
+                //        var other = ColliderBaseComponent.Instances[j];
+                //        if (collider.Entity == other.Entity)
+                //        {
+                //            continue;
+                //        }
+                //        if (collider.CollidesWith(nextPos.ToVector2(), nextRotation, other, out _))
+                //        {
+                //            nextPos = comp.Entity.Position;
+                //            nextRotation = comp.Entity.Rotation;
+                //            newAngle = angle;
+                //        }
+                //    }
+                //}
 
-                angle = newAngle;
+                //angle = newAngle;
 
-                comp.Entity.Rotation = nextRotation;
+                //comp.Entity.Rotation = nextRotation;
                 //comp.Entity.Position = nextPos;
 
 

@@ -26,7 +26,7 @@ namespace MyGame.TestGame.Systems
         public override void Initialize()
         {
             //forceGenerators.Add(new Gravity(500));
-            //forceGenerators.Add(new Medium(2f));
+            forceGenerators.Add(new Medium(2f));
         }
 
         public override void Update(GameTime gameTime)
@@ -57,11 +57,14 @@ namespace MyGame.TestGame.Systems
                 //find acceleration
                 //todo: maybe this needs another loop ????
                 var accleration = rig.ResultantForce / rig.Mass; //Todo, get a prop for this ?
+                var angularAcceleration = rig.ResultantAngularForce / rig.Mass; //Todo, get a prop for this ?
                 //TODO: SATISFY CONSTRAINTS
 
                 //TODO: Consider if we need to move translation out of integration ?
-                Integrator.Integrate(accleration, rig);
+                Integrator.Integrate(accleration,angularAcceleration, rig);
 
+                rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle);
+                
                 var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
 
                 for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
@@ -71,7 +74,7 @@ namespace MyGame.TestGame.Systems
                     {
                         continue;
                     }
-                    if (collider.CollidesWith(rig.CurrentPosition.ToVector2(), rig.Entity.Rotation, other, out var x))
+                    if (collider.CollidesWith(rig.CurrentPosition.ToVector2(), rig.NextRotation, other, out var x))
                     {
                         //TODO: This is not real physics...
 
@@ -89,7 +92,8 @@ namespace MyGame.TestGame.Systems
                                 JellyFactory.CreateNonCollidingCube(new Vector3(middle, 0), this.Manager, 10, Color.Green);
                                 JellyFactory.CreateNonCollidingCube(new Vector3(points[1], 0), this.Manager, 10, Color.Blue);
                             }
-                            rig.CurrentPosition = rig.Entity.Position;
+                            rig.CurrentPosition = rig.PreviousPosition;
+                            rig.CurrentAngle = rig.PreviousAngle;
                         }
                         if (points.Count == 1)
                         {
@@ -98,9 +102,13 @@ namespace MyGame.TestGame.Systems
                                 this.spawned = toSpawn;
                                 JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Chartreuse);
                             }
-                            rig.CurrentPosition = rig.Entity.Position;
+                            rig.CurrentPosition = rig.PreviousPosition;
+                            rig.CurrentAngle = rig.PreviousAngle;
                         }
-                        rig.CurrentPosition = rig.Entity.Position;
+                        rig.CurrentPosition = rig.PreviousPosition;
+                        rig.CurrentAngle = rig.PreviousAngle;
+                        rig.CurrentAngularVelocity = 0;
+                        rig.NextRotation = Matrix.CreateRotationZ(rig.PreviousAngle);
                     }
                 }
 
