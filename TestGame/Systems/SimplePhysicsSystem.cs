@@ -5,6 +5,7 @@ using MyGame.TestGame.Components.ColliderComponents;
 using MyGame.TestGame.Factories;
 using MyGame.TestGame.Physics.ForceGenerators;
 using MyGame.TestGame.Physics.Integrators;
+using System;
 using System.Collections.Generic;
 
 namespace MyGame.TestGame.Systems
@@ -25,8 +26,8 @@ namespace MyGame.TestGame.Systems
 
         public override void Initialize()
         {
-            //forceGenerators.Add(new Gravity(50));
-            //forceGenerators.Add(new Medium(2f));
+            forceGenerators.Add(new Gravity(50));
+            forceGenerators.Add(new Medium(2f));
         }
 
         public override void Update(GameTime gameTime)
@@ -110,27 +111,10 @@ namespace MyGame.TestGame.Systems
                             pointOfimpact = points[0];
                             //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, points[0]);
                         }
-                        Vector2 otherVel = Vector2.Zero;
-                        float otherMass = 1;
-                        if (other.AttachedRigidBody(out var otherRig))
-                        {
-                            otherVel = otherRig.CurrentVelocity;
-                            otherMass = otherRig.Mass;
-                        }
-                        var relativevelocity = rig.CurrentVelocity - otherVel;
-                        var vrn = Vector2.Dot(relativevelocity, -mtv.Value.Axis);
-                        //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
 
-                        var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk.
+                        ApplyImpulseNoRotation(rig, other, mtv);
+                        //ApplyImpulse(rig, other, mtv, pointOfimpact);
 
-                        var imnpulse = (-(1f + fCr) * (vrn)) /
-                                       ((Vector2.Dot(-mtv.Value.Axis, -mtv.Value.Axis)) *
-                                         (1f / rig.Mass + 1f / otherMass));
-                        rig.CurrentVelocity += (imnpulse * -mtv.Value.Axis) / rig.Mass;
-                        if (otherRig != null)
-                        {
-                            otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
-                        }
 
                         var penetration = -mtv.Value.Axis * mtv.Value.Magnitude;
                         rig.CurrentPosition += penetration;
@@ -155,6 +139,69 @@ namespace MyGame.TestGame.Systems
                 //rig.SimulationObject.CurrentPosition = rig.Entity.Position;
 
                 //Reset forces on the object..
+            }
+        }
+        private static void ApplyImpulse(RigidBodyComponent rig, ColliderBaseComponent other, MTV? mtv, Vector2 pointOfCollision)
+        {
+            Vector2 otherVel = Vector2.Zero;
+            float otherMass = 1;
+            float otherInertia = 1;
+            Vector2 otherCenterOfMass = Vector2.Zero;
+            if (other.AttachedRigidBody(out var otherRig))
+            {
+                otherVel = otherRig.CurrentVelocity;
+                otherMass = otherRig.Mass;
+                otherInertia = otherRig.Inertia;
+                otherCenterOfMass = otherRig.CenterOfMass;
+            }
+            var relativevelocity = rig.CurrentVelocity - otherVel;
+            var vrn = Vector2.Dot(relativevelocity, -mtv.Value.Axis);
+            //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
+
+            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk.
+
+            var body1Contact = new Vector3(rig.CenterOfMass + pointOfCollision - rig.CurrentPosition, 0);
+            var body2Contact = new Vector3(otherCenterOfMass + pointOfCollision - rig.CurrentPosition,0);
+            var oneoverMasses = 1 / rig.Mass + 1 / otherMass;
+            var v3point = new Vector3(pointOfCollision, 0);
+            var v3normal = (Vector3.Normalize(other.Entity.Position - rig.Entity.Position));
+            Func<float, Vector3, float> functionOfInertia = (inertia, collisionPoint) => Vector3.Dot(v3normal, Vector3.Cross(Vector3.Cross(collisionPoint,v3normal)/inertia,collisionPoint));
+
+
+            var imnpulse = (-(1f + fCr) * (vrn)) /
+                            ( oneoverMasses+
+                                functionOfInertia(rig.Inertia, body1Contact) + functionOfInertia(otherInertia, body2Contact));
+            rig.CurrentVelocity += (imnpulse * -mtv.Value.Axis) / rig.Mass;
+            var angularVelociy = (Vector3.Cross(body1Contact,imnpulse * v3normal)) / rig.Inertia;
+            if (otherRig != null)
+            {
+                otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
+                otherRig.CurrentAngularVelocity -= (body2Contact.ToVector2().Cross(imnpulse * -mtv.Value.Axis)) / otherRig.Inertia;
+            }
+        }
+
+        private static void ApplyImpulseNoRotation(RigidBodyComponent rig, ColliderBaseComponent other, MTV? mtv)
+        {
+            Vector2 otherVel = Vector2.Zero;
+            float otherMass = 1;
+            if (other.AttachedRigidBody(out var otherRig))
+            {
+                otherVel = otherRig.CurrentVelocity;
+                otherMass = otherRig.Mass;
+            }
+            var relativevelocity = rig.CurrentVelocity - otherVel;
+            var vrn = Vector2.Dot(relativevelocity, -mtv.Value.Axis);
+            //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
+
+            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk.
+
+            var imnpulse = (-(1f + fCr) * (vrn)) /
+                           ((Vector2.Dot(-mtv.Value.Axis, -mtv.Value.Axis)) *
+                             (1f / rig.Mass + 1f / otherMass));
+            rig.CurrentVelocity += (imnpulse * -mtv.Value.Axis) / rig.Mass;
+            if (otherRig != null)
+            {
+                otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
             }
         }
     }

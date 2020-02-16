@@ -46,7 +46,7 @@ namespace MyGame.TestGame.Factories
             //var height = Vector3.Up * scale;
 
             var col = new BoxCollider(entity, width.ToVector2(), height.ToVector2());
-            new RigidBodyComponent(entity, 1, 200, new Vector2((width.X + height.X) /2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
+            new RigidBodyComponent(entity, 1, 2000, new Vector2((width.X + height.X) /2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
             return entity;
         }
         public static IEntity CreateNonCollidingCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
@@ -71,7 +71,7 @@ namespace MyGame.TestGame.Factories
             var col = new BoxCollider(entity, width.ToVector2(), height.ToVector2());
             if (rig)
             {
-                new RigidBodyComponent(entity, 20, 200, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
+                new RigidBodyComponent(entity, 20, 20000, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
 
             }      
             return entity;
