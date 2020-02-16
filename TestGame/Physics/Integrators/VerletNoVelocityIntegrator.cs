@@ -31,21 +31,21 @@ namespace MyGame.TestGame.Physics.Integrators
             Drag = drag;
         }
 
-        public override void Integrate(Vector2 acceleration, float angularAcceleraion, RigidBodyComponent simulationObject)
+        public override void Integrate(Vector2 acceleration, float angularAcceleraion, RigidBodyComponent simulationObject, float dt)
         {
             var newPos = (2 - drag) * simulationObject.CurrentPosition
                 - (1 - drag) * simulationObject.PreviousPosition
-                + acceleration * FixedTimeStep * FixedTimeStep;
+                + acceleration * dt * dt;
 
-            simulationObject.CurrentVelocity += acceleration * FixedTimeStep;
+            simulationObject.CurrentVelocity += acceleration * dt;
             simulationObject.PreviousPosition = simulationObject.CurrentPosition;
             simulationObject.CurrentPosition = newPos;
 
             var newAngle = (2 - drag) * simulationObject.CurrentAngle
                 - (1 - drag) * simulationObject.PreviousAngle
-                + angularAcceleraion * FixedTimeStep * FixedTimeStep;
+                + angularAcceleraion * dt * dt;
 
-            simulationObject.CurrentAngularVelocity += angularAcceleraion * FixedTimeStep;
+            simulationObject.CurrentAngularVelocity += angularAcceleraion * dt;
             simulationObject.PreviousAngle = simulationObject.CurrentAngularVelocity;
             simulationObject.CurrentAngle = newAngle;
         }

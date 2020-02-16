@@ -58,91 +58,42 @@ namespace MyGame.TestGame.Systems
                 //todo: maybe this needs another loop ????
                 var accleration = rig.ResultantForce / rig.Mass; //Todo, get a prop for this ?
                 var angularAcceleration = rig.ResultantAngularForce / rig.Inertia; //Todo, get a prop for this ?
-                //TODO: SATISFY CONSTRAINTS
+                                                                                   //TODO: SATISFY CONSTRAINTS
 
                 //TODO: Consider if we need to move translation out of integration ?
-                Integrator.Integrate(accleration,angularAcceleration, rig);
-
-                rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle);
-                
-                var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
-
-                for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
+                bool tryAgain = true;
+                float tolerance = Integrator.FixedTimeStep / 100;
+                float timeStep = Integrator.FixedTimeStep;
+                bool didPen = false;
+                var rigCopy = rig;
+                while (tryAgain && timeStep > tolerance)
                 {
-                    var other = ColliderBaseComponent.Instances[j];
-                    if (collider.Entity == other.Entity)
+                    tryAgain = false;
+                    rigCopy = rig;
+                    Integrator.Integrate(accleration, angularAcceleration, rigCopy, timeStep);
+
+                    rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle);
+
+                    var collider = rig.Collider;
+
+                    for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
                     {
-                        continue;
-                    }
-                    if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var mtv))
-                    {
-                        //TODO: This is not real physics...
-
-                        var A = collider.FindBestCollisionEdge(mtv.Value.Axis, (rig.CurrentPosition));
-                        var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Position.ToVector2());
-                        var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
-
-                        Vector2 pointOfimpact = Vector2.Zero;
-                        if (points.Count >= 2)
+                        var other = ColliderBaseComponent.Instances[j];
+                        if (collider.Entity == other.Entity)
                         {
-                            var middle = points[0] + (points[1] - points[0]) * .5f;
-                            if (this.spawned <= 0f)
+                            continue;
+                        }
+                        if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var mtv))
+                        {
+                            if(HandleCollision(rig, collider, other, mtv))
                             {
-                                this.spawned = toSpawn;
-                                //JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Red);
-                                //JellyFactory.CreateNonCollidingCube(new Vector3(middle, 0), this.Manager, 10, Color.Green);
-                                //JellyFactory.CreateNonCollidingCube(new Vector3(points[1], 0), this.Manager, 10, Color.Blue);
+                                tryAgain = true;
+                                timeStep /= 2;
                             }
-                            pointOfimpact = middle;
-                            //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, middle);
-                            //rig.CurrentPosition = rig.PreviousPosition;
-                            //rig.CurrentAngle = rig.PreviousAngle;
                         }
-                        if (points.Count == 1)
-                        {
-                            if (this.spawned <= 0f)
-                            {
-                                this.spawned = toSpawn;
-                                JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Chartreuse);
-                            }
-                            //rig.CurrentPosition = rig.PreviousPosition;
-                            //rig.CurrentAngle = rig.PreviousAngle;
-                            pointOfimpact = points[0];
-                            //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, points[0]);
-                        }
-                        Vector2 otherVel = Vector2.Zero;
-                        float otherMass = 1;
-                        if(other.AttachedRigidBody(out var otherRig)){
-                            otherVel = otherRig.CurrentVelocity;
-                            otherMass = otherRig.Mass;
-                        }
-                        var relativevelocity = rig.CurrentVelocity - otherVel;
-                        var vrn = Vector2.Dot(relativevelocity, -mtv.Value.Axis);
-                        //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
-
-                        var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk.
-
-                        var imnpulse = (-(1f+fCr) * (vrn)) /
-                                       ( (Vector2.Dot(-mtv.Value.Axis,-mtv.Value.Axis)) *
-                                         (1f/rig.Mass + 1f/otherMass));
-                        rig.CurrentVelocity += (imnpulse * -mtv.Value.Axis) / rig.Mass;
-                        if (otherRig != null)
-                        {
-                            otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
-                        }
-
-                        if (mtv.Value.Magnitude > 1)
-                        {
-                            rig.CurrentPosition = rig.PreviousPosition;
-                            rig.CurrentAngle = rig.PreviousAngle;
-                        }
-                        //rig.AddForceAtPoint()
-                        //rig.CurrentAngularVelocity = 0;
-                        //rig.CurrentVelocity = Vector2.Zero;
-                        rig.NextRotation = Matrix.CreateRotationZ(rig.PreviousAngle);
                     }
                 }
-
+                rig = rigCopy;
                 spawned -= (float)gameTime.ElapsedGameTime.TotalSeconds;
                 spawned2 -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -156,6 +107,82 @@ namespace MyGame.TestGame.Systems
                 //rig.SimulationObject.CurrentPosition = rig.Entity.Position;
 
                 //Reset forces on the object..
+            }
+        }
+
+        private bool HandleCollision(RigidBodyComponent rig, ColliderBaseComponent collider, ColliderBaseComponent other, MTV? mtv)
+        {
+            //TODO: This is not real physics...
+
+            var A = collider.FindBestCollisionEdge(mtv.Value.Axis, (rig.CurrentPosition));
+            var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Position.ToVector2());
+            var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
+
+            Vector2 pointOfimpact = Vector2.Zero;
+            if (points.Count >= 2)
+            {
+                var middle = points[0] + (points[1] - points[0]) * .5f;
+                if (this.spawned <= 0f)
+                {
+                    this.spawned = toSpawn;
+                    //JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Red);
+                    //JellyFactory.CreateNonCollidingCube(new Vector3(middle, 0), this.Manager, 10, Color.Green);
+                    //JellyFactory.CreateNonCollidingCube(new Vector3(points[1], 0), this.Manager, 10, Color.Blue);
+                }
+                pointOfimpact = middle;
+                //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, middle);
+                //rig.CurrentPosition = rig.PreviousPosition;
+                //rig.CurrentAngle = rig.PreviousAngle;
+            }
+            if (points.Count == 1)
+            {
+                if (this.spawned <= 0f)
+                {
+                    this.spawned = toSpawn;
+                    JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Chartreuse);
+                }
+                //rig.CurrentPosition = rig.PreviousPosition;
+                //rig.CurrentAngle = rig.PreviousAngle;
+                pointOfimpact = points[0];
+                //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, points[0]);
+            }
+
+            ApplyImpulse(rig, other, mtv);
+
+            if (mtv.Value.Magnitude > .5)
+            {
+                return true;
+                //rig.CurrentPosition = rig.PreviousPosition;
+                //rig.CurrentAngle = rig.PreviousAngle;
+            }
+            else
+            {
+                return false;
+            }
+            //rig.NextRotation = Matrix.CreateRotationZ(rig.PreviousAngle);
+        }
+
+        private static void ApplyImpulse(RigidBodyComponent rig, ColliderBaseComponent other, MTV? mtv)
+        {
+            Vector2 otherVel = Vector2.Zero;
+            float otherMass = 1;
+            if (other.AttachedRigidBody(out var otherRig))
+            {
+                otherVel = otherRig.CurrentVelocity;
+                otherMass = otherRig.Mass;
+            }
+            var relativevelocity = rig.CurrentVelocity - otherVel;
+            var vrn = Vector2.Dot(relativevelocity, -mtv.Value.Axis);
+
+            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk.
+
+            var imnpulse = (-(1f + fCr) * (vrn)) /
+                           ((Vector2.Dot(-mtv.Value.Axis, -mtv.Value.Axis)) *
+                             (1f / rig.Mass + 1f / otherMass));
+            rig.CurrentVelocity += (imnpulse * -mtv.Value.Axis) / rig.Mass;
+            if (otherRig != null)
+            {
+                otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
             }
         }
     }

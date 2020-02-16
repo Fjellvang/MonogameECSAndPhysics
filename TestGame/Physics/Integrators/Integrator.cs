@@ -19,6 +19,6 @@ namespace MyGame.TestGame.Physics.Integrators
             this.FixedTimeStep = (float)game.TargetElapsedTime.TotalSeconds;
         }
 
-        public abstract void Integrate(Vector2 acceleration,float angularAcceleration, RigidBodyComponent simulationObject);
+        public abstract void Integrate(Vector2 acceleration,float angularAcceleration, RigidBodyComponent simulationObject, float dt);
     }
 }
