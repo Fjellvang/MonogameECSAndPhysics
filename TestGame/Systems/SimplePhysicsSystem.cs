@@ -61,10 +61,10 @@ namespace MyGame.TestGame.Systems
                 //TODO: SATISFY CONSTRAINTS
 
                 //TODO: Consider if we need to move translation out of integration ?
-                Integrator.Integrate(accleration,angularAcceleration, rig);
+                Integrator.Integrate(accleration, angularAcceleration, rig);
 
                 rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle);
-                
+
                 var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
 
                 for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
@@ -112,7 +112,8 @@ namespace MyGame.TestGame.Systems
                         }
                         Vector2 otherVel = Vector2.Zero;
                         float otherMass = 1;
-                        if(other.AttachedRigidBody(out var otherRig)){
+                        if (other.AttachedRigidBody(out var otherRig))
+                        {
                             otherVel = otherRig.CurrentVelocity;
                             otherMass = otherRig.Mass;
                         }
@@ -122,26 +123,24 @@ namespace MyGame.TestGame.Systems
 
                         var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk.
 
-                        var imnpulse = (-(1f+fCr) * (vrn)) /
-                                       ( (Vector2.Dot(-mtv.Value.Axis,-mtv.Value.Axis)) *
-                                         (1f/rig.Mass + 1f/otherMass));
+                        var imnpulse = (-(1f + fCr) * (vrn)) /
+                                       ((Vector2.Dot(-mtv.Value.Axis, -mtv.Value.Axis)) *
+                                         (1f / rig.Mass + 1f / otherMass));
                         rig.CurrentVelocity += (imnpulse * -mtv.Value.Axis) / rig.Mass;
                         if (otherRig != null)
                         {
                             otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
                         }
 
-                        if (mtv.Value.Magnitude > 1)
-                        {
-                            rig.CurrentPosition = rig.PreviousPosition;
-                            rig.CurrentAngle = rig.PreviousAngle;
-                        }
+                        var penetration = -mtv.Value.Axis * mtv.Value.Magnitude;
+                        rig.CurrentPosition += penetration;
                         //rig.AddForceAtPoint()
                         //rig.CurrentAngularVelocity = 0;
                         //rig.CurrentVelocity = Vector2.Zero;
                         rig.NextRotation = Matrix.CreateRotationZ(rig.PreviousAngle);
                     }
                 }
+
 
                 spawned -= (float)gameTime.ElapsedGameTime.TotalSeconds;
                 spawned2 -= (float)gameTime.ElapsedGameTime.TotalSeconds;
