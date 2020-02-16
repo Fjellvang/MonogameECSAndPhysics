@@ -63,13 +63,17 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, height.ToVector2() - half, Vector2.Zero - half, color);
             return entity;
         }
-        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default, bool rig = true)
         {
             var entity = CreateNonCollidingCube(center, manager, scale, color);
             var width = Vector3.Right * scale;
             var height = Vector3.Up * scale;
             var col = new BoxCollider(entity, width.ToVector2(), height.ToVector2());
-            new RigidBodyComponent(entity, 20, 200, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
+            if (rig)
+            {
+                new RigidBodyComponent(entity, 20, 200, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
+
+            }      
             return entity;
         }
         public static IEntity CreateRandomShape(Vector3 center, IManager manager, float scale = 1, Color color = default)
