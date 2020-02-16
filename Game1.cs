@@ -46,8 +46,8 @@ namespace MyGame
 
             //JellyFactory.CreateControllabelJellyCube(centerPos, gameManager, 320);
             //JellyFactory.CreateControllableTriangle(centerPos, gameManager, 20, Color.CornflowerBlue);
-            JellyFactory.CreateControllableCube(centerPos, gameManager, 60, Color.White);
-            JellyFactory.CreateCube(new Vector3(400, 400, 0), gameManager, 60, Color.White);
+            var x = JellyFactory.CreateControllableCube(centerPos, gameManager, 60, Color.White);
+            var y = JellyFactory.CreateCube(new Vector3(400, 400, 0), gameManager, 120, Color.White);
             //JellyFactory.CreateNonCollidingCube(new Vector3(420, 400, 0), gameManager, 20, Color.Red);
 
             //JellyFactory.CreateRandomShape(new Vector3(400,400,0), gameManager, 60, Color.White);

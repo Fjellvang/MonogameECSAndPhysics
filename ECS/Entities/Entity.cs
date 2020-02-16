@@ -17,11 +17,11 @@ namespace MyGame.ECS.Entities
             this.manager = manager;
             this.Position = position;   
             this.manager.AddEntity(this);
-
+            Id = Guid.NewGuid();
         }
         private readonly IManager manager;
         private readonly List<IComponent> components = new List<IComponent>();
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public IManager Manager => manager;
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using MyGame.ECS.Components;
 using MyGame.ECS.Entities;
+using MyGame.TestGame.Components.ColliderComponents;
 using MyGame.TestGame.Physics;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,10 @@ namespace MyGame.TestGame.Components
         //public Vector2 Acceleration { get; set; }
         //public SimulationObject SimulationObject { get; set; }
         public float Mass { get; set; }
+        public float Inertia { get; set; }
         public Vector2 CenterOfMass { get; set; }
         public SimulationObjectType ObjectType { get; set; }
+        public ColliderBaseComponent Collider { get; }
         public Vector2 PreviousPosition { get; set; }
         public Vector2 CurrentPosition { get; set; }
         public Vector2 CurrentVelocity { get; set; }
@@ -31,14 +34,17 @@ namespace MyGame.TestGame.Components
         public float ResultantAngularForce { get; set; }
         public Matrix NextRotation { get; set; } //TODO: finde something better????
 
-        public RigidBodyComponent(IEntity entity, float mass, Vector2 center, SimulationObjectType objectType) : base(entity)
+        public RigidBodyComponent(IEntity entity, float mass, float inertia, Vector2 center, SimulationObjectType objectType, ColliderBaseComponent collider) : base(entity)
         {
             this.Mass = mass;
+            this.Inertia = inertia;
             this.ObjectType = objectType;
+            Collider = collider;
             CurrentPosition = entity.Position.ToVector2();
             PreviousPosition = entity.Position.ToVector2();
             CurrentVelocity = Vector2.Zero;
             this.CenterOfMass = center;
+            collider.AttachRigidBody(this);
         }
 
         public void ResetForces()

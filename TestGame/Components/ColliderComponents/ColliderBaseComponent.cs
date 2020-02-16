@@ -9,6 +9,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
 {
     public abstract class ColliderBaseComponent : BaseComponent<ColliderBaseComponent>
     {
+        RigidBodyComponent attachedRigidbody;
         public ColliderBaseComponent(IEntity entity) : base(entity)
         {
         }
@@ -24,7 +25,19 @@ namespace MyGame.TestGame.Components.ColliderComponents
         }
         public abstract Vector2[] Normals(Matrix nextRotation);
 
+        public void AttachRigidBody(RigidBodyComponent rig)
+        {
+            if (rig.Entity != this.Entity)
+            {
+                throw new Exception("attaching another entitis rig");
+            }
+            this.attachedRigidbody = rig;
+        }
         
+        public bool AttachedRigidBody(out RigidBodyComponent rig) {
+            rig = attachedRigidbody;
+            return rig != null;
+        }
 
         public abstract bool CollidesWith(Vector2 nextPosition, Matrix nextRotation, ColliderBaseComponent collider, out MTV? point);
 

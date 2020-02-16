@@ -24,18 +24,29 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, downRight.ToVector2(), downLeft.ToVector2(), color);
             new LineRelativeToEntityComponent(entity, downLeft.ToVector2(), top.ToVector2(), color);
             new PlayerInputComponent(entity);
-            new PolygonCollider(entity, new Vector2[] { top.ToVector2(), downRight.ToVector2(), downLeft.ToVector2() });
-            new RigidBodyComponent(entity, 1,((top + downLeft + downRight) / 2).ToVector2(), SimulationObjectType.Active);
+            var col = new PolygonCollider(entity, new Vector2[] { top.ToVector2(), downRight.ToVector2(), downLeft.ToVector2() });
+            new RigidBodyComponent(entity, 1, 200,((top + downLeft + downRight) / 2).ToVector2(), SimulationObjectType.Active, col);
             return entity;
         }
         public static IEntity CreateControllableCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
         {
-            var entity = CreateCube(center, manager, scale, color);
-            new PlayerInputComponent(entity);
+            var entity = new Entity(manager, center);
             var width = Vector3.Right * scale;
             var height = Vector3.Up * scale;
-            new BoxCollider(entity, width.ToVector2(), height.ToVector2());
-            new RigidBodyComponent(entity, 1, new Vector2((width.X + height.X) /2, (width.Y + height.Y) / 2), SimulationObjectType.Active);
+            var halfwidth = (width / 2).ToVector2();
+            var halfheight = (height / 2).ToVector2();
+            var half = halfwidth + halfheight;
+            new LineRelativeToEntityComponent(entity, Vector2.Zero - (half), width.ToVector2() - (half), color);
+            new LineRelativeToEntityComponent(entity, width.ToVector2() - half, (width * 0.5f + height * 0.5f).ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, (width + height).ToVector2() - half, height.ToVector2() - half, color);
+            new LineRelativeToEntityComponent(entity, height.ToVector2() - half, Vector2.Zero - half, color);
+            //var entity = CreateCube(center, manager, scale, color);
+            new PlayerInputComponent(entity);
+            //var width = Vector3.Right * scale;
+            //var height = Vector3.Up * scale;
+
+            var col = new BoxCollider(entity, width.ToVector2(), height.ToVector2());
+            new RigidBodyComponent(entity, 1, 200, new Vector2((width.X + height.X) /2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
             return entity;
         }
         public static IEntity CreateNonCollidingCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
@@ -57,7 +68,8 @@ namespace MyGame.TestGame.Factories
             var entity = CreateNonCollidingCube(center, manager, scale, color);
             var width = Vector3.Right * scale;
             var height = Vector3.Up * scale;
-            new BoxCollider(entity, width.ToVector2(), height.ToVector2());
+            var col = new BoxCollider(entity, width.ToVector2(), height.ToVector2());
+            new RigidBodyComponent(entity, 20, 200, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
             return entity;
         }
         public static IEntity CreateRandomShape(Vector3 center, IManager manager, float scale = 1, Color color = default)
@@ -85,7 +97,7 @@ namespace MyGame.TestGame.Factories
 
             var StationaryBall = new Entity(gameManager, centerPos);
             //new SpriteComponent(StationaryBall, "ball",1,Color.Red,Vector2.One*0.5f);
-            new RigidBodyComponent(StationaryBall,1, Vector2.Zero, SimulationObjectType.Passive);
+            new RigidBodyComponent(StationaryBall,1, 200, Vector2.Zero, SimulationObjectType.Passive, null);
             //new BoxColliderComponent(StationaryBall, new Rectangle(0, 0, 68, 68));
             new PlayerInputComponent(StationaryBall);
 
@@ -95,49 +107,49 @@ namespace MyGame.TestGame.Factories
             var southBall = new Entity(gameManager, southballPos) ;
             //new SpriteComponent(southBall, "ball", 1, Color.Red, Vector2.One * 1f);
             //new BoxColliderComponent(southBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(southBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(southBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
             var eastBallPos = centerPos + Vector3.Right * dist;
             var eastBall = new Entity(gameManager,eastBallPos);
             //new SpriteComponent(eastBall, "ball", 1, Color.Red, Vector2.One * 1f);
             //new BoxColliderComponent(eastBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(eastBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(eastBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
             var westBallPos = centerPos + Vector3.Right * -dist;
             var westBall = new Entity(gameManager, westBallPos);
             //new SpriteComponent(westBall, "ball", 1, Color.Red, Vector2.One * 1f);
             //new BoxColliderComponent(westBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(westBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(westBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
             var northBallPos = centerPos + Vector3.Down * dist;
             var northBall = new Entity(gameManager, northBallPos);
             //new SpriteComponent(northBall, "ball",1,Color.Red,Vector2.One*1f);
             //new BoxColliderComponent(northBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(northBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(northBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
             var northEastBallPos = eastBallPos + .5f * (northBallPos - eastBallPos);
             var northEastBall = new Entity(gameManager, northEastBallPos);
             //new SpriteComponent(northEastBall, "ball",1,Color.Red,Vector2.One*1f);
             //new BoxColliderComponent(northEastBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(northEastBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(northEastBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
             var northwestBallPos = westBallPos + .5f * (northBallPos - westBallPos);
             var northwestBall = new Entity(gameManager, northwestBallPos);
             //new SpriteComponent(northwestBall, "ball",1,Color.Red,Vector2.One*1f);
             //new BoxColliderComponent(northwestBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(northwestBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(northwestBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
             var southEastBallPos = eastBallPos+ .5f * (southballPos - eastBallPos);
             var southEastBall = new Entity(gameManager, southEastBallPos);
             //new SpriteComponent(southEastBall, "ball",1,Color.Red,Vector2.One*1f);
             //new BoxColliderComponent(southEastBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(southEastBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(southEastBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
             var southWestBallPos = westBallPos + .5f * (southballPos - westBallPos);
             var southWestBall = new Entity(gameManager, southWestBallPos);
             //new SpriteComponent(southWestBall, "ball",1,Color.Red,Vector2.One*1f);
             //new BoxColliderComponent(southWestBall, new Rectangle(0, 0, 68, 68));
-            new RigidBodyComponent(southWestBall, 5f, Vector2.Zero, SimulationObjectType.Active);
+            new RigidBodyComponent(southWestBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
 
             var dampness = 50f;
