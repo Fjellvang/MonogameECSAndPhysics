@@ -16,7 +16,9 @@ namespace MyGame.TestGame.Components
         //public Vector2 Acceleration { get; set; }
         //public SimulationObject SimulationObject { get; set; }
         public float Mass { get; set; }
+        public float InvMass { get; set; }
         public float Inertia { get; set; }
+        public float InvInertia { get; set; }
         public Vector2 CenterOfMass { get; set; }
         public SimulationObjectType ObjectType { get; set; }
         public ColliderBaseComponent Collider { get; }
@@ -37,7 +39,9 @@ namespace MyGame.TestGame.Components
         public RigidBodyComponent(IEntity entity, float mass, float inertia, Vector2 center, SimulationObjectType objectType, ColliderBaseComponent collider) : base(entity)
         {
             this.Mass = mass;
+            this.InvMass = 1 / mass;
             this.Inertia = inertia;
+            this.InvInertia = 1 / inertia;
             this.ObjectType = objectType;
             Collider = collider;
             CurrentPosition = entity.Position.ToVector2();

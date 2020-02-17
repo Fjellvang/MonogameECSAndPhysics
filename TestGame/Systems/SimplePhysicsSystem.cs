@@ -57,8 +57,8 @@ namespace MyGame.TestGame.Systems
 
                 //find acceleration
                 //todo: maybe this needs another loop ????
-                var accleration = rig.ResultantForce / rig.Mass; //Todo, get a prop for this ?
-                var angularAcceleration = rig.ResultantAngularForce / rig.Inertia; //Todo, get a prop for this ?
+                var accleration = rig.ResultantForce * rig.InvMass; //Todo, get a prop for this ?
+                var angularAcceleration = rig.ResultantAngularForce * rig.InvInertia; //Todo, get a prop for this ?
                 //TODO: SATISFY CONSTRAINTS
 
                 //TODO: Consider if we need to move translation out of integration ?
@@ -112,8 +112,12 @@ namespace MyGame.TestGame.Systems
                             //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, points[0]);
                         }
 
-                        ApplyImpulseNoRotation(rig, other, mtv);
-                        //ApplyImpulse(rig, other, mtv, pointOfimpact);
+                        //ApplyImpulseNoRotation(rig, other, mtv);
+                        if (points.Count > 0)
+                        {
+
+                            ApplyImpulse(rig, other, mtv, pointOfimpact);
+                        }
 
 
                         var penetration = -mtv.Value.Axis * mtv.Value.Magnitude;
@@ -145,39 +149,57 @@ namespace MyGame.TestGame.Systems
         {
             Vector2 otherVel = Vector2.Zero;
             float otherMass = 1;
+            float otherInvMass = 1;
             float otherInertia = 1;
+            float otherInvInertia = 0;
+            float otherAngularVelocity = 0;
             Vector2 otherCenterOfMass = Vector2.Zero;
             if (other.AttachedRigidBody(out var otherRig))
             {
+                //TODO: Maybe get a mock rig in cases where other doesnt have one ??? or maybe just a passive rig...
+                otherAngularVelocity = otherRig.CurrentAngularVelocity;
                 otherVel = otherRig.CurrentVelocity;
                 otherMass = otherRig.Mass;
+                otherInvMass = otherRig.InvMass;
                 otherInertia = otherRig.Inertia;
+                otherInvInertia = otherRig.InvInertia;
                 otherCenterOfMass = otherRig.CenterOfMass;
             }
-            var relativevelocity = rig.CurrentVelocity - otherVel;
-            var vrn = Vector2.Dot(relativevelocity, -mtv.Value.Axis);
+
+            var normal = -mtv.Value.Axis;
+            var body1Contact = (pointOfCollision - rig.CurrentPosition);
+            var body2Contact = (pointOfCollision - rig.CurrentPosition);
+
+            var relativevelocity = otherVel + body2Contact.Cross(otherAngularVelocity) - 
+                rig.CurrentVelocity - body1Contact.Cross(rig.CurrentAngularVelocity);
+            var velocityAlongNormal = Vector2.Dot(relativevelocity, normal);
             //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
 
-            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk.
+            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
 
-            var body1Contact = new Vector3(rig.CenterOfMass + pointOfCollision - rig.CurrentPosition, 0);
-            var body2Contact = new Vector3(otherCenterOfMass + pointOfCollision - rig.CurrentPosition,0);
-            var oneoverMasses = 1 / rig.Mass + 1 / otherMass;
-            var v3point = new Vector3(pointOfCollision, 0);
-            var v3normal = (Vector3.Normalize(other.Entity.Position - rig.Entity.Position));
-            Func<float, Vector3, float> functionOfInertia = (inertia, collisionPoint) => Vector3.Dot(v3normal, Vector3.Cross(Vector3.Cross(collisionPoint,v3normal)/inertia,collisionPoint));
+            var body1RadCrossN = body1Contact.Cross(normal);
+            var body2RadCrossN = body2Contact.Cross(normal);
 
+            var body1Inertia = body1RadCrossN * body1RadCrossN * rig.InvInertia;
+            var body2Inertia = body2RadCrossN * body2RadCrossN * otherInvInertia;
 
-            var imnpulse = (-(1f + fCr) * (vrn)) /
-                            ( oneoverMasses+
-                                functionOfInertia(rig.Inertia, body1Contact) + functionOfInertia(otherInertia, body2Contact));
-            rig.CurrentVelocity += (imnpulse * -mtv.Value.Axis) / rig.Mass;
-            var angularVelociy = (Vector3.Cross(body1Contact,imnpulse * v3normal)) / rig.Inertia;
+            float jNormal = -(1 + fCr) * velocityAlongNormal;
+
+            jNormal /= rig.InvMass * otherInvMass + body1Inertia + body2Inertia;
+            //jNormal /= contactpoints len... såeh 2 eller 1?..
+
+            //apply impulse..
+
+            var impulse = jNormal * normal;
+            rig.CurrentVelocity -= impulse * rig.InvMass;
+            var angle = rig.InvInertia * body1Contact.Cross(impulse);
+            rig.CurrentAngularVelocity -= rig.InvInertia * body1Contact.Cross(impulse);
             if (otherRig != null)
             {
-                otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
-                otherRig.CurrentAngularVelocity -= (body2Contact.ToVector2().Cross(imnpulse * -mtv.Value.Axis)) / otherRig.Inertia;
+                otherRig.CurrentVelocity += impulse * otherRig.InvMass;
+                otherRig.CurrentAngularVelocity += otherRig.InvInertia * body2Contact.Cross(impulse);
             }
+            
         }
 
         private static void ApplyImpulseNoRotation(RigidBodyComponent rig, ColliderBaseComponent other, MTV? mtv)
