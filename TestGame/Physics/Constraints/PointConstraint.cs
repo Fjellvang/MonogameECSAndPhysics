@@ -20,7 +20,7 @@ namespace MyGame.TestGame.Physics.Constraints
         }
         public void SatisfyConstraint()
         {
-            Rig.Entity.Position = Point;
+            Rig.Entity.Transform.Position = Point;
         }
     }
 }

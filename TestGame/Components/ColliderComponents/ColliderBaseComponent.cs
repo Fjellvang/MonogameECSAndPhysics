@@ -130,7 +130,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
             int length = vertices.Length;//TODO: do we need vertices in worldspacce??? Probably not.
             var max = float.MinValue;
             var index = -1;
-            var vert = this.Vertices(nextPostion, this.Entity.Rotation);
+            var vert = this.Vertices(nextPostion, this.Entity.Transform.Rotation);
 
             // get the farthest point
             for (int i = 0; i < length; i++)

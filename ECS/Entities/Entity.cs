@@ -9,13 +9,16 @@ namespace MyGame.ECS.Entities
 {
     public class Entity : IEntity
     {
-        public Vector3 Position { get; set; } //TODO: In the future this could be a matrix with pos, scale and rot ?..
-        public Matrix Rotation { get; set; } = Matrix.Identity;
-        
-        public Entity(IManager manager, Vector3 position)
+        //public Matrix Rotation { get; set; }
+        public Transform Transform { get; set; }
+
+        public Entity(IManager manager, Vector3 position, float rotation = 0)
         {
             this.manager = manager;
-            this.Position = position;   
+            var rotationMatrix = Matrix.CreateRotationZ(rotation);
+
+            this.Transform = new Transform() { Rotation = rotationMatrix, Position = position, Angle = rotation, Id = Guid.NewGuid() };
+            //this.Position = position;   
             this.manager.AddEntity(this);
             Id = Guid.NewGuid();
         }
@@ -50,6 +53,14 @@ namespace MyGame.ECS.Entities
         {
             components.Add(component);
         }
+    }
+    public class Transform
+    {
+        public Vector3 Position { get; set; } //TODO: In the future this could be a matrix with pos, scale and rot ?..
+        public Matrix Rotation { get;
+            set; }
+        public Guid Id { get; set; }
+        public float Angle { get; set; }
     }
 
     public struct EntityId

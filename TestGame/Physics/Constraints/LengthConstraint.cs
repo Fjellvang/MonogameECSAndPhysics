@@ -23,7 +23,7 @@ namespace MyGame.TestGame.Physics.Constraints
         }
         public void SatisfyConstraint()
         {
-            var direction = ObjB.Entity.Position - ObjA.Entity.Position;
+            var direction = ObjB.Entity.Transform.Position - ObjA.Entity.Transform.Position;
             var currentLength = direction.Length();
 
             if (direction != Vector3.Zero)
@@ -31,8 +31,8 @@ namespace MyGame.TestGame.Physics.Constraints
                 direction.Normalize();
                 //half of the desired lenght
                 var moveVector = .5f * (currentLength - Length) * direction;
-                ObjA.Entity.Position += moveVector;
-                ObjB.Entity.Position -= moveVector;
+                ObjA.Entity.Transform.Position += moveVector;
+                ObjB.Entity.Transform.Position -= moveVector;
             }
         }
     }

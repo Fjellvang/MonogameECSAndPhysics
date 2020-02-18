@@ -26,7 +26,7 @@ namespace MyGame.TestGame.Systems
 
         public override void Initialize()
         {
-            forceGenerators.Add(new Gravity(50));
+            //forceGenerators.Add(new Gravity(50));
             forceGenerators.Add(new Medium(2f));
         }
 
@@ -80,7 +80,7 @@ namespace MyGame.TestGame.Systems
                         //TODO: This is not real physics...
 
                         var A = collider.FindBestCollisionEdge(mtv.Value.Axis, (rig.CurrentPosition));
-                        var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Position.ToVector2());
+                        var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Transform.Position.ToVector2());
                         var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
 
                         Vector2 pointOfimpact = Vector2.Zero;

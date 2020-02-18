@@ -42,7 +42,7 @@ namespace MyGame.TestGame.Systems
                 //TODO: Do we want to do it like this!??
                 //var transform = sprite.Entity.GetComponent<TransformComponent>()?.Position ?? Vector3.Zero;
                 //Quick fix...
-                var trans2d = new Vector2(sprite.Entity.Position.X, sprite.Entity.Position.Y);
+                var trans2d = new Vector2(sprite.Entity.Transform.Position.X, sprite.Entity.Transform.Position.Y);
 
                 // calculate the distance between the two vectors
 
@@ -61,6 +61,7 @@ namespace MyGame.TestGame.Systems
             }
             for (int i = 0; i < LineComponentBase.Instances.Count; i++)
             {
+                
                 var comp = LineComponentBase.Instances[i];
                 comp.CalculateLine(out var from, out var distance, out var angle);
                 // calculate the angle between the two vectors

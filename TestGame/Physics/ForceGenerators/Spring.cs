@@ -28,7 +28,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
         /// The other connected object
         /// </summary>
         public RigidBodyComponent SimulationObjectB { get; set; }
-        public Spring(float stiffness, float damping, RigidBodyComponent objA, RigidBodyComponent objB) : this(stiffness, damping, objA, objB, (objB.Entity.Position - objA.Entity.Position).Length())
+        public Spring(float stiffness, float damping, RigidBodyComponent objA, RigidBodyComponent objB) : this(stiffness, damping, objA, objB, (objB.Entity.Transform.Position - objA.Entity.Transform.Position).Length())
         {
 
         }
@@ -44,7 +44,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
 
         public void ApplyForce(RigidBodyComponent simulationObject)
         {
-            var direction = (SimulationObjectA.Entity.Position - SimulationObjectB.Entity.Position).ToVector2();
+            var direction = (SimulationObjectA.Entity.Transform.Position - SimulationObjectB.Entity.Transform.Position).ToVector2();
             if (direction != Vector2.Zero)
             {
                 var currentLength = direction.Length();

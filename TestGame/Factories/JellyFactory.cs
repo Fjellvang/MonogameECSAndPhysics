@@ -63,11 +63,20 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, height.ToVector2() - half, Vector2.Zero - half, color);
             return entity;
         }
-        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default, bool rig = true)
+        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default, bool rig = true, float rotation = 0)
         {
-            var entity = CreateNonCollidingCube(center, manager, scale, color);
+            var entity = new Entity(manager, center, rotation);
             var width = Vector3.Right * scale;
             var height = Vector3.Up * scale;
+            var halfwidth = (width / 2).ToVector2();
+            var halfheight = (height / 2).ToVector2();
+            var half = halfwidth + halfheight;
+            new LineRelativeToEntityComponent(entity, Vector2.Zero - (half), width.ToVector2() - (half), color);
+            new LineRelativeToEntityComponent(entity, width.ToVector2() - half, (width * 0.5f + height * 0.5f).ToVector2(), color);
+            new LineRelativeToEntityComponent(entity, (width + height).ToVector2() - half, height.ToVector2() - half, color);
+            new LineRelativeToEntityComponent(entity, height.ToVector2() - half, Vector2.Zero - half, color);
+
+
             var col = new BoxCollider(entity, width.ToVector2(), height.ToVector2());
             if (rig)
             {

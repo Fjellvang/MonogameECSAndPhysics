@@ -44,11 +44,13 @@ namespace MyGame.TestGame.Components
             this.InvInertia = 1 / inertia;
             this.ObjectType = objectType;
             Collider = collider;
-            CurrentPosition = entity.Position.ToVector2();
-            PreviousPosition = entity.Position.ToVector2();
+            CurrentPosition = entity.Transform.Position.ToVector2();
+            PreviousPosition = entity.Transform.Position.ToVector2();
             CurrentVelocity = Vector2.Zero;
             this.CenterOfMass = center;
             collider.AttachRigidBody(this);
+
+            CurrentAngle = (3f / 4f) * MathHelper.Pi;
         }
 
         public void ResetForces()
@@ -58,12 +60,12 @@ namespace MyGame.TestGame.Components
         }
         public void UpdateEntityPosition()
         {
-            this.Entity.Position = new Vector3(CurrentPosition, 0);
-            this.Entity.Rotation = Matrix.CreateRotationZ(CurrentAngle);
+            this.Entity.Transform.Position = new Vector3(CurrentPosition, 0);
+            this.Entity.Transform.Rotation = Matrix.CreateRotationZ(CurrentAngle);
         }
         public void AddRelativeForce(Vector2 force)
         {
-            this.ResultantForce += Vector2.Transform(force, this.Entity.Rotation);
+            this.ResultantForce += Vector2.Transform(force, this.Entity.Transform.Rotation);
         }
         public void AddForce(Vector2 force)
         {

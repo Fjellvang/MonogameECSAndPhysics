@@ -47,12 +47,12 @@ namespace MyGame.TestGame.Components.ColliderComponents
             {
                 case BoxCollider other:
                     var axis = this.Normals(nextRotation);
-                    var otherAxes = other.Normals(other.Entity.Rotation);
-                    var thatpos = collider.Entity.Position.ToVector2();
+                    var otherAxes = other.Normals(other.Entity.Transform.Rotation);
+                    var thatpos = collider.Entity.Transform.Position.ToVector2();
                     for (int i = 0; i < axis.Length; i++)
                     {
                         var verts = this.Vertices(nextPos, nextRotation);
-                        var otherVerts = other.Vertices(thatpos, other.Entity.Rotation);
+                        var otherVerts = other.Vertices(thatpos, other.Entity.Transform.Rotation);
                         var proj1 = GetProjectionOnAxis(verts, axis[i]);
                         var proj2 = GetProjectionOnAxis(otherVerts, axis[i]);
 
@@ -94,7 +94,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
                     colliding = true;
                     break;
                 case PolygonCollider other:
-                    colliding = CollisionBoxToPolygon(other, this, other.Entity.Position.ToVector2(), other.Entity.Rotation, nextPos, nextRotation, out point);
+                    colliding = CollisionBoxToPolygon(other, this, other.Entity.Transform.Position.ToVector2(), other.Entity.Transform.Rotation, nextPos, nextRotation, out point);
                     break;
                 default:
                     break;
@@ -102,7 +102,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
             if (colliding)
             {
                 //TODO: refactor this bad shiet.
-                var delta = collider.Entity.Position - this.Entity.Position;
+                var delta = collider.Entity.Transform.Position - this.Entity.Transform.Position;
                 var dot = Vector2.Dot(point.Value.Axis, delta.ToVector2());
                 point = new MTV(point.Value.Axis * Math.Sign(dot), point.Value.Magnitude);
             }
