@@ -27,7 +27,7 @@ namespace MyGame.TestGame.Systems
         public override void Initialize()
         {
             //forceGenerators.Add(new Gravity(50));
-            forceGenerators.Add(new Medium(2f));
+            forceGenerators.Add(new Medium(1f));
         }
 
         public override void Update(GameTime gameTime)
@@ -68,13 +68,9 @@ namespace MyGame.TestGame.Systems
 
                 var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
 
-                for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
+                for (int j = i+1; j < ColliderBaseComponent.Instances.Count; j++)
                 {
                     var other = ColliderBaseComponent.Instances[j];
-                    if (collider.Entity == other.Entity)
-                    {
-                        continue;
-                    }
                     if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var mtv))
                     {
                         //TODO: This is not real physics...
@@ -83,41 +79,12 @@ namespace MyGame.TestGame.Systems
                         var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Transform.Position.ToVector2());
                         var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
 
-                        Vector2 pointOfimpact = Vector2.Zero;
-                        if (points.Count >= 2)
-                        {
-                            var middle = points[0] + (points[1] - points[0]) * .5f;
-                            if (this.spawned <= 0f)
-                            {
-                                this.spawned = toSpawn;
-                                //JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Red);
-                                //JellyFactory.CreateNonCollidingCube(new Vector3(middle, 0), this.Manager, 10, Color.Green);
-                                //JellyFactory.CreateNonCollidingCube(new Vector3(points[1], 0), this.Manager, 10, Color.Blue);
-                            }
-                            pointOfimpact = middle;
-                            //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, middle);
-                            //rig.CurrentPosition = rig.PreviousPosition;
-                            //rig.CurrentAngle = rig.PreviousAngle;
-                        }
-                        if (points.Count == 1)
-                        {
-                            if (this.spawned <= 0f)
-                            {
-                                this.spawned = toSpawn;
-                                JellyFactory.CreateNonCollidingCube(new Vector3(points[0], 0), this.Manager, 10, Color.Chartreuse);
-                            }
-                            //rig.CurrentPosition = rig.PreviousPosition;
-                            //rig.CurrentAngle = rig.PreviousAngle;
-                            pointOfimpact = points[0];
-                            //rig.AddForceAtPoint(-rig.CurrentVelocity * 10f, points[0]);
-                        }
-
-                        //ApplyImpulseNoRotation(rig, other, mtv);
                         if (points.Count > 0)
                         {
-
-                            ApplyImpulse(rig, other, mtv, pointOfimpact);
+                            //TODO: this is wrong. leave for now
+                            ApplyImpulse(rig, other, mtv, points[0], points.Count);
                         }
+                        
 
 
                         var penetration = -mtv.Value.Axis * mtv.Value.Magnitude;
@@ -145,7 +112,7 @@ namespace MyGame.TestGame.Systems
                 //Reset forces on the object..
             }
         }
-        private static void ApplyImpulse(RigidBodyComponent rig, ColliderBaseComponent other, MTV? mtv, Vector2 pointOfCollision)
+        private static void ApplyImpulse(RigidBodyComponent rig, ColliderBaseComponent other, MTV? mtv, Vector2 pointOfCollision, int numberOfCollisionPoints)
         {
             Vector2 otherVel = Vector2.Zero;
             float otherMass = 1;
@@ -175,7 +142,7 @@ namespace MyGame.TestGame.Systems
             var velocityAlongNormal = Vector2.Dot(relativevelocity, normal);
             //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
 
-            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
+            var fCr = .0f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
 
             var body1RadCrossN = body1Contact.Cross(normal);
             var body2RadCrossN = body2Contact.Cross(normal);
@@ -186,7 +153,7 @@ namespace MyGame.TestGame.Systems
             float jNormal = -(1 + fCr) * velocityAlongNormal;
 
             jNormal /= rig.InvMass * otherInvMass + body1Inertia + body2Inertia;
-            //jNormal /= contactpoints len... såeh 2 eller 1?..
+            jNormal /= numberOfCollisionPoints;
 
             //apply impulse..
 

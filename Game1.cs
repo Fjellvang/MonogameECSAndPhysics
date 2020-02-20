@@ -51,6 +51,9 @@ namespace MyGame
             JellyFactory.CreateCube(new Vector3(400, 400, 0), gameManager, 120, Color.White);
             JellyFactory.CreateCube(new Vector3(400, 600, 0), gameManager, 120, Color.White, rotation: (2*MathHelper.Pi/4));
             JellyFactory.CreateCube(new Vector3(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight * 1.7f, 0), gameManager, 1500, Color.White, false);
+            JellyFactory.CreateCube(new Vector3(_graphics.PreferredBackBufferWidth * 1.5f, _graphics.PreferredBackBufferHeight / 2, 0), gameManager, 1500, Color.White, false);
+            JellyFactory.CreateCube(new Vector3(-_graphics.PreferredBackBufferWidth * 0.5f, _graphics.PreferredBackBufferHeight / 2, 0), gameManager, 1500, Color.White, false);
+            JellyFactory.CreateCube(new Vector3(_graphics.PreferredBackBufferWidth / 2, -_graphics.PreferredBackBufferHeight * 0.7f, 0), gameManager, 1500, Color.White, false);
             //JellyFactory.CreateNonCollidingCube(new Vector3(420, 400, 0), gameManager, 20, Color.Red);
 
             //JellyFactory.CreateRandomShape(new Vector3(400,400,0), gameManager, 60, Color.White);

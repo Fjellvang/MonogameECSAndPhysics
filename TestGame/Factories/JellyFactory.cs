@@ -80,7 +80,7 @@ namespace MyGame.TestGame.Factories
             var col = new BoxCollider(entity, width.ToVector2(), height.ToVector2());
             if (rig)
             {
-                new RigidBodyComponent(entity, 20, 20000, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
+                new RigidBodyComponent(entity, 200, 20000, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
 
             }      
             return entity;
@@ -110,7 +110,7 @@ namespace MyGame.TestGame.Factories
 
             var StationaryBall = new Entity(gameManager, centerPos);
             //new SpriteComponent(StationaryBall, "ball",1,Color.Red,Vector2.One*0.5f);
-            new RigidBodyComponent(StationaryBall,1, 200, Vector2.Zero, SimulationObjectType.Passive, null);
+            new RigidBodyComponent(StationaryBall,200, 20000, Vector2.Zero, SimulationObjectType.Passive, null);
             //new BoxColliderComponent(StationaryBall, new Rectangle(0, 0, 68, 68));
             new PlayerInputComponent(StationaryBall);
 

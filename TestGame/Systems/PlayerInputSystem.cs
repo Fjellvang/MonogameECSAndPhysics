@@ -13,7 +13,7 @@ namespace MyGame.TestGame.Systems
     {
         float angleRotationalSpeed = 5000;
         float angle = 0;
-        float speed = 100;
+        float speed = 1000;
         float origspeed;
         KeyboardState oldState;
         public PlayerInputSystem(IManager manager) : base(manager)
