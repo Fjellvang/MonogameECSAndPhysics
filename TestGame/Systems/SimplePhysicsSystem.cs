@@ -12,9 +12,6 @@ namespace MyGame.TestGame.Systems
 {
     public class SimplePhysicsSystem : BaseSystem
     {
-        float toSpawn = 2.0f;
-        float spawned = 0;
-        float spawned2 = 0;
         //TODO: find better soultion
         List<IForceGenerator> forceGenerators = new List<IForceGenerator>();
         public Integrator Integrator{ get; set; }
@@ -26,8 +23,8 @@ namespace MyGame.TestGame.Systems
 
         public override void Initialize()
         {
-            //forceGenerators.Add(new Gravity(50));
-            forceGenerators.Add(new Medium(1f));
+            forceGenerators.Add(new Gravity(50));
+            forceGenerators.Add(new Medium(2f));
         }
 
         public override void Update(GameTime gameTime)
@@ -64,8 +61,7 @@ namespace MyGame.TestGame.Systems
                 //TODO: Consider if we need to move translation out of integration ?
                 Integrator.Integrate(accleration, angularAcceleration, rig);
 
-                rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle);
-
+                rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle); 
                 var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
 
                 for (int j = i+1; j < ColliderBaseComponent.Instances.Count; j++)
@@ -79,10 +75,10 @@ namespace MyGame.TestGame.Systems
                         var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Transform.Position.ToVector2());
                         var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
 
-                        if (points.Count > 0)
+                        for (int l = 0; l < points.Count; l++)
                         {
-                            //TODO: this is wrong. leave for now
-                            ApplyImpulse(rig, other, mtv, points[0], points.Count);
+                            ApplyImpulse(rig, other, mtv, points[l], points.Count);
+
                         }
                         
 
@@ -97,8 +93,6 @@ namespace MyGame.TestGame.Systems
                 }
 
 
-                spawned -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-                spawned2 -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 rig.UpdateEntityPosition();
 
@@ -142,7 +136,7 @@ namespace MyGame.TestGame.Systems
             var velocityAlongNormal = Vector2.Dot(relativevelocity, normal);
             //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
 
-            var fCr = .0f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
+            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
 
             var body1RadCrossN = body1Contact.Cross(normal);
             var body2RadCrossN = body2Contact.Cross(normal);
@@ -156,11 +150,22 @@ namespace MyGame.TestGame.Systems
             jNormal /= numberOfCollisionPoints;
 
             //apply impulse..
-
             var impulse = jNormal * normal;
-            rig.CurrentVelocity -= impulse * rig.InvMass;
+            //rig.CurrentVelocity -= impulse * rig.InvMass;
+            var vel1 = impulse * rig.InvMass;
             var angle = rig.InvInertia * body1Contact.Cross(impulse);
-            rig.CurrentAngularVelocity -= rig.InvInertia * body1Contact.Cross(impulse);
+            
+            var collisionTanget = normal.Cross(normal.Cross(relativevelocity)); // wonder bout order of operations???
+            var vrn = relativevelocity.Dot(collisionTanget);
+            if (Math.Abs(vrn) > 0)
+            {
+                //apply friction
+            }
+            else
+            {
+                rig.CurrentVelocity -= vel1;
+                rig.CurrentAngularVelocity -= angle;
+            }
             if (otherRig != null)
             {
                 otherRig.CurrentVelocity += impulse * otherRig.InvMass;
