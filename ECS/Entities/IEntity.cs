@@ -11,6 +11,7 @@ namespace MyGame.ECS.Entities
     {
         //Vector3 Position { get; set; }
         //Matrix Rotation { get; set; }
+        public Guid Id { get; set; }
         Transform Transform { get; set; }
         IManager Manager { get; }
         IList<IComponent> Components { get; }  //TODO: Could be dict? NameofComponent, should be faster lookup ?

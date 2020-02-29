@@ -14,6 +14,7 @@ namespace MyGame.TestGame.Systems
     {
         //TODO: find better soultion
         List<IForceGenerator> forceGenerators = new List<IForceGenerator>();
+        List<Collision> collisions = new List<Collision>();
         public Integrator Integrator{ get; set; }
         public SimplePhysicsSystem(IManager manager, Rectangle? bounds, Integrator integrator) : base(manager)
         {
@@ -26,6 +27,12 @@ namespace MyGame.TestGame.Systems
             forceGenerators.Add(new Gravity(50));
             forceGenerators.Add(new Medium(2f));
         }
+        private void AddCollision(RigidBodyComponent A, ColliderBaseComponent B, MTV mtv)
+        {
+            var collision = new Collision(A, B, mtv);
+            if (collisions.Contains(collision)) { return; }
+            collisions.Add(collision);
+        }
 
         public override void Update(GameTime gameTime)
         {
@@ -34,6 +41,51 @@ namespace MyGame.TestGame.Systems
                 var spring = SpringComponent.Instances[i].spring;
                 
                 spring.ApplyForce(null); // passes null, as spring stores reference internally...
+            }
+            //TODO: add collision check bere 
+            for (int i = 0; i < RigidBodyComponent.Instances.Count; i++)
+            {
+                var rig = RigidBodyComponent.Instances[i];
+                var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
+                for (int j = i+1; j < ColliderBaseComponent.Instances.Count; j++)
+                {
+                    var other = ColliderBaseComponent.Instances[j];
+                    if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var mtv))
+                    {
+                        //TODO: This is not real physics...
+                        AddCollision(rig, other, mtv.Value);
+                        //var A = collider.FindBestCollisionEdge(mtv.Value.Axis, (rig.CurrentPosition));
+                        //var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Transform.Position.ToVector2());
+                        //var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
+
+                        //for (int l = 0; l < points.Count; l++)
+                        //{
+                        //    ApplyImpulse(rig, other, mtv, points[l], points.Count);
+
+                        //}
+                        
+
+
+                        //var penetration = -mtv.Value.Axis * mtv.Value.Magnitude;
+                        //rig.CurrentPosition += penetration;
+                    }
+                }
+            }
+            for (int i = 0; i < collisions.Count; i++)
+            {
+                var collision = collisions[i];
+                var rig = collision.A;
+                var other = collision.B;
+                var mtv = collision.MTV;
+                var A = rig.Collider.FindBestCollisionEdge(mtv.Axis, rig.CurrentPosition);
+                var B = other.FindBestCollisionEdge(-mtv.Axis, other.Entity.Transform.Position.ToVector2());
+                var points = rig.Collider.CalculateContactManifold(A, B, mtv.Axis);
+                for (int l = 0; l < points.Count; l++)
+                {
+                    ApplyImpulse(rig, other, mtv, points[l], points.Count);
+                }
+                var penetration = -mtv.Axis * mtv.Magnitude;
+                rig.CurrentPosition += penetration;
             }
 
             for (int i = 0; i < RigidBodyComponent.Instances.Count; i++)
@@ -60,37 +112,8 @@ namespace MyGame.TestGame.Systems
 
                 //TODO: Consider if we need to move translation out of integration ?
                 Integrator.Integrate(accleration, angularAcceleration, rig);
-
                 rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle); 
-                var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
 
-                for (int j = i+1; j < ColliderBaseComponent.Instances.Count; j++)
-                {
-                    var other = ColliderBaseComponent.Instances[j];
-                    if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var mtv))
-                    {
-                        //TODO: This is not real physics...
-
-                        var A = collider.FindBestCollisionEdge(mtv.Value.Axis, (rig.CurrentPosition));
-                        var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Transform.Position.ToVector2());
-                        var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
-
-                        for (int l = 0; l < points.Count; l++)
-                        {
-                            ApplyImpulse(rig, other, mtv, points[l], points.Count);
-
-                        }
-                        
-
-
-                        var penetration = -mtv.Value.Axis * mtv.Value.Magnitude;
-                        rig.CurrentPosition += penetration;
-                        //rig.AddForceAtPoint()
-                        //rig.CurrentAngularVelocity = 0;
-                        //rig.CurrentVelocity = Vector2.Zero;
-                        rig.NextRotation = Matrix.CreateRotationZ(rig.PreviousAngle);
-                    }
-                }
 
 
 
@@ -136,7 +159,7 @@ namespace MyGame.TestGame.Systems
             var velocityAlongNormal = Vector2.Dot(relativevelocity, normal);
             //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
 
-            var fCr = .5f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
+            var fCr = 1f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
 
             var body1RadCrossN = body1Contact.Cross(normal);
             var body2RadCrossN = body2Contact.Cross(normal);
@@ -160,6 +183,9 @@ namespace MyGame.TestGame.Systems
             if (Math.Abs(vrn) > 0)
             {
                 //apply friction
+                
+                rig.CurrentVelocity -= vel1;//remove this   
+                rig.CurrentAngularVelocity -= angle;//remove this
             }
             else
             {
@@ -197,6 +223,31 @@ namespace MyGame.TestGame.Systems
             {
                 otherRig.CurrentVelocity -= (imnpulse * -mtv.Value.Axis) / otherRig.Mass;
             }
+        }
+    }
+    public struct Collision
+    {
+        public RigidBodyComponent A { get; }
+        public ColliderBaseComponent B { get; }
+        public MTV MTV { get; }
+        public Collision(RigidBodyComponent a, ColliderBaseComponent b, MTV mtv)
+        {
+            A = a;
+            B = b;
+            MTV = mtv;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Collision collision &&
+                   A.Entity.Id == collision.A.Entity.Id &&
+                   B.Entity.Id == collision.B.Entity.Id &&
+                   EqualityComparer<MTV>.Default.Equals(MTV, collision.MTV);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(A, B, MTV);
         }
     }
 }
