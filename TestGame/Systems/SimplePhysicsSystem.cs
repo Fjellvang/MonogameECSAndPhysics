@@ -87,6 +87,7 @@ namespace MyGame.TestGame.Systems
                 var penetration = -mtv.Axis * mtv.Magnitude;
                 rig.CurrentPosition += penetration;
             }
+            collisions.Clear();
 
             for (int i = 0; i < RigidBodyComponent.Instances.Count; i++)
             {
@@ -133,7 +134,7 @@ namespace MyGame.TestGame.Systems
         {
             Vector2 otherVel = Vector2.Zero;
             float otherMass = 1;
-            float otherInvMass = 1;
+            float otherInvMass = 0;
             float otherInertia = 1;
             float otherInvInertia = 0;
             float otherAngularVelocity = 0;
@@ -157,9 +158,13 @@ namespace MyGame.TestGame.Systems
             var relativevelocity = otherVel + body2Contact.Cross(otherAngularVelocity) - 
                 rig.CurrentVelocity - body1Contact.Cross(rig.CurrentAngularVelocity);
             var velocityAlongNormal = Vector2.Dot(relativevelocity, normal);
+            if (velocityAlongNormal < .05f) //TODO: Find a fitting constant here.
+            {
+                return;
+            }
             //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
 
-            var fCr = 1f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
+            float fCr = 1f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
 
             var body1RadCrossN = body1Contact.Cross(normal);
             var body2RadCrossN = body2Contact.Cross(normal);
@@ -167,9 +172,9 @@ namespace MyGame.TestGame.Systems
             var body1Inertia = body1RadCrossN * body1RadCrossN * rig.InvInertia;
             var body2Inertia = body2RadCrossN * body2RadCrossN * otherInvInertia;
 
-            float jNormal = -(1 + fCr) * velocityAlongNormal;
+            float jNormal = -(1f + fCr) * velocityAlongNormal;
 
-            jNormal /= rig.InvMass * otherInvMass + body1Inertia + body2Inertia;
+            jNormal /= (rig.InvMass + otherInvMass) + body1Inertia + body2Inertia;
             jNormal /= numberOfCollisionPoints;
 
             //apply impulse..
@@ -179,10 +184,13 @@ namespace MyGame.TestGame.Systems
             var angle = rig.InvInertia * body1Contact.Cross(impulse);
             
             var collisionTanget = normal.Cross(normal.Cross(relativevelocity)); // wonder bout order of operations???
-            var vrn = relativevelocity.Dot(collisionTanget);
-            if (Math.Abs(vrn) > 0)
+            var Vrt = relativevelocity.Dot(collisionTanget);
+            if (Math.Abs(Vrt) > 0)
             {
                 //apply friction
+                var mub = 1f; //Friction coefficient. TODO: Get this properly instead of this arbitraty value
+                var newVel = ((impulse) + ((mub * jNormal) * collisionTanget)) / rig.Mass;
+                var newAngle = (body1Contact.Cross((impulse) + (mub * jNormal) * collisionTanget)) * rig.InvInertia;
                 
                 rig.CurrentVelocity -= vel1;//remove this   
                 rig.CurrentAngularVelocity -= angle;//remove this
