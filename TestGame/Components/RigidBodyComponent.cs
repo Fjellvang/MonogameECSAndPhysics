@@ -50,7 +50,6 @@ namespace MyGame.TestGame.Components
             this.CenterOfMass = center;
             collider.AttachRigidBody(this);
 
-            CurrentAngle = (3f / 4f) * MathHelper.Pi;
         }
 
         public void ResetForces()

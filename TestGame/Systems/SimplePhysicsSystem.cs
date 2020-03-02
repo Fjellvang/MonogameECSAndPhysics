@@ -14,7 +14,7 @@ namespace MyGame.TestGame.Systems
     {
         //TODO: find better soultion
         List<IForceGenerator> forceGenerators = new List<IForceGenerator>();
-        List<Collision> collisions = new List<Collision>();
+        Queue<Collision> collisions = new Queue<Collision>();
         public Integrator Integrator{ get; set; }
         public SimplePhysicsSystem(IManager manager, Rectangle? bounds, Integrator integrator) : base(manager)
         {
@@ -25,13 +25,13 @@ namespace MyGame.TestGame.Systems
         public override void Initialize()
         {
             forceGenerators.Add(new Gravity(50));
-            forceGenerators.Add(new Medium(2f));
+            //forceGenerators.Add(new Medium(2f));
         }
         private void AddCollision(RigidBodyComponent A, ColliderBaseComponent B, MTV mtv)
         {
             var collision = new Collision(A, B, mtv);
             if (collisions.Contains(collision)) { return; }
-            collisions.Add(collision);
+            collisions.Enqueue(collision);
         }
 
         public override void Update(GameTime gameTime)
@@ -52,28 +52,13 @@ namespace MyGame.TestGame.Systems
                     var other = ColliderBaseComponent.Instances[j];
                     if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var mtv))
                     {
-                        //TODO: This is not real physics...
                         AddCollision(rig, other, mtv.Value);
-                        //var A = collider.FindBestCollisionEdge(mtv.Value.Axis, (rig.CurrentPosition));
-                        //var B = other.FindBestCollisionEdge(-mtv.Value.Axis, other.Entity.Transform.Position.ToVector2());
-                        //var points = collider.CalculateContactManifold(A, B, mtv.Value.Axis);
-
-                        //for (int l = 0; l < points.Count; l++)
-                        //{
-                        //    ApplyImpulse(rig, other, mtv, points[l], points.Count);
-
-                        //}
-                        
-
-
-                        //var penetration = -mtv.Value.Axis * mtv.Value.Magnitude;
-                        //rig.CurrentPosition += penetration;
                     }
                 }
             }
-            for (int i = 0; i < collisions.Count; i++)
+            while(collisions.Count > 0)
             {
-                var collision = collisions[i];
+                var collision = collisions.Dequeue();
                 var rig = collision.A;
                 var other = collision.B;
                 var mtv = collision.MTV;
@@ -84,10 +69,27 @@ namespace MyGame.TestGame.Systems
                 {
                     ApplyImpulse(rig, other, mtv, points[l], points.Count);
                 }
-                var penetration = -mtv.Axis * mtv.Magnitude;
+                var penetration = -mtv.Axis * (mtv.Magnitude * 1.5f);
+                //if(other.AttachedRigidBody(out var otherrig))
+                //{
+                //    penetration *= .5f;
+                //    otherrig.CurrentPosition -= penetration; 
+                //}
                 rig.CurrentPosition += penetration;
+                //TODO: REFACTOR
+                //for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
+                //{
+                //    var other2 = ColliderBaseComponent.Instances[j];
+                //    if (rig.Entity.Id == other2.Entity.Id)
+                //    {
+                //        continue;
+                //    }
+                //    if (rig.Collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other2, out var mtv2))
+                //    {
+                //        AddCollision(rig, other, mtv2.Value);
+                //    }
+                //}
             }
-            collisions.Clear();
 
             for (int i = 0; i < RigidBodyComponent.Instances.Count; i++)
             {
@@ -114,8 +116,6 @@ namespace MyGame.TestGame.Systems
                 //TODO: Consider if we need to move translation out of integration ?
                 Integrator.Integrate(accleration, angularAcceleration, rig);
                 rig.NextRotation = Matrix.CreateRotationZ(rig.CurrentAngle); 
-
-
 
 
                 rig.UpdateEntityPosition();
@@ -155,16 +155,18 @@ namespace MyGame.TestGame.Systems
             var body1Contact = (pointOfCollision - rig.CurrentPosition);
             var body2Contact = (pointOfCollision - rig.CurrentPosition);
 
-            var relativevelocity = otherVel + body2Contact.Cross(otherAngularVelocity) - 
-                rig.CurrentVelocity - body1Contact.Cross(rig.CurrentAngularVelocity);
+            //var relativevelocity = otherVel + body2Contact.Cross(otherAngularVelocity) - 
+            //    rig.CurrentVelocity - body1Contact.Cross(rig.CurrentAngularVelocity);
+            var relativevelocity = otherVel -
+                rig.CurrentVelocity;
             var velocityAlongNormal = Vector2.Dot(relativevelocity, normal);
-            if (velocityAlongNormal < .05f) //TODO: Find a fitting constant here.
+            if (velocityAlongNormal < 5f) //TODO: Find a fitting constant here.
             {
                 return;
             }
             //rig.AddForceAtPoint(-rig.CurrentVelocity, pointOfimpact);
 
-            float fCr = 1f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
+            float fCr = .2f; // Coefficient of restitution. 1 to 0, betyder halvvejs mellem elastisk og ind elastisk. TODO: Gem det i objekter og tag mindste..
 
             var body1RadCrossN = body1Contact.Cross(normal);
             var body2RadCrossN = body2Contact.Cross(normal);
@@ -184,16 +186,23 @@ namespace MyGame.TestGame.Systems
             var angle = rig.InvInertia * body1Contact.Cross(impulse);
             
             var collisionTanget = normal.Cross(normal.Cross(relativevelocity)); // wonder bout order of operations???
+            collisionTanget.Normalize();
             var Vrt = relativevelocity.Dot(collisionTanget);
             if (Math.Abs(Vrt) > 0)
             {
                 //apply friction
-                var mub = 1f; //Friction coefficient. TODO: Get this properly instead of this arbitraty value
+                var mub = .001f; //Friction coefficient. TODO: Get this properly instead of this arbitraty value
                 var newVel = ((impulse) + ((mub * jNormal) * collisionTanget)) / rig.Mass;
                 var newAngle = (body1Contact.Cross((impulse) + (mub * jNormal) * collisionTanget)) * rig.InvInertia;
                 
-                rig.CurrentVelocity -= vel1;//remove this   
-                rig.CurrentAngularVelocity -= angle;//remove this
+                //IS THIS REALLY RIGHT??? anyway refactor heavly.
+                rig.CurrentVelocity -= newVel;
+                rig.CurrentAngularVelocity -= newAngle;
+                if (otherRig != null)
+                {
+                    otherRig.CurrentVelocity += newVel;
+                    otherRig.CurrentAngularVelocity += newAngle;
+                }
             }
             else
             {
