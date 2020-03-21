@@ -27,7 +27,7 @@ namespace MyGame.TestGame.Systems
             forceGenerators.Add(new Gravity(50));
             //forceGenerators.Add(new Medium(2f));
         }
-        private void AddCollision(RigidBodyComponent A, ColliderBaseComponent B, MTV mtv)
+        private void AddCollision(ColliderBaseComponent A, ColliderBaseComponent B, MTV mtv)
         {
             var collision = new Collision(A, B, mtv);
             if (collisions.Contains(collision)) { return; }
@@ -47,34 +47,36 @@ namespace MyGame.TestGame.Systems
             {
                 var rig = RigidBodyComponent.Instances[i];
                 var collider = rig.Entity.GetComponent<ColliderBaseComponent>();
-                for (int j = i+1; j < ColliderBaseComponent.Instances.Count; j++)
+                for (int j = i+1; j < RigidBodyComponent.Instances.Count; j++)
                 {
-                    var other = ColliderBaseComponent.Instances[j];
-                    if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other, out var mtv))
+                    var other = RigidBodyComponent.Instances[j];
+                    if (collider.CollidesWith(rig.CurrentPosition, rig.NextRotation, other.Collider, out var mtv))
                     {
-                        AddCollision(rig, other, mtv.Value);
+                        AddCollision(rig.Collider, other.Collider, mtv.Value);
                     }
                 }
             }
             while(collisions.Count > 0)
             {
                 var collision = collisions.Dequeue();
-                var rig = collision.A;
-                var other = collision.B;
+                var colliderA = collision.A;
+                var colliderB = collision.B;
+                colliderA.AttachedRigidBody(out var rig);
                 var mtv = collision.MTV;
-                var A = rig.Collider.FindBestCollisionEdge(mtv.Axis, rig.CurrentPosition);
-                var B = other.FindBestCollisionEdge(-mtv.Axis, other.Entity.Transform.Position.ToVector2());
-                var points = rig.Collider.CalculateContactManifold(A, B, mtv.Axis);
+                var A = colliderA.FindBestCollisionEdge(mtv.Axis, rig.CurrentPosition);
+                var B = colliderB.FindBestCollisionEdge(-mtv.Axis, colliderB.Entity.Transform.Position);
+                var points = colliderA.CalculateContactManifold(A, B, mtv.Axis);
                 for (int l = 0; l < points.Count; l++)
                 {
-                    ApplyImpulse(rig, other, mtv, points[l], points.Count);
+                    ApplyImpulse(colliderA, colliderB, mtv, points[l], points.Count);
                 }
                 var penetration = -mtv.Axis * (mtv.Magnitude * 1.5f);
-                //if(other.AttachedRigidBody(out var otherrig))
+                //if (colliderB.AttachedRigidBody(out var otherrig))
                 //{
                 //    penetration *= .5f;
-                //    otherrig.CurrentPosition -= penetration; 
+                //    otherrig.CurrentPosition -= penetration;
                 //}
+                //colliderA.AttachedRigidBody(out var rig);
                 rig.CurrentPosition += penetration;
                 //TODO: REFACTOR
                 //for (int j = 0; j < ColliderBaseComponent.Instances.Count; j++)
@@ -130,26 +132,10 @@ namespace MyGame.TestGame.Systems
                 //Reset forces on the object..
             }
         }
-        private static void ApplyImpulse(RigidBodyComponent rig, ColliderBaseComponent other, MTV? mtv, Vector2 pointOfCollision, int numberOfCollisionPoints)
+        private static void ApplyImpulse(ColliderBaseComponent colA, ColliderBaseComponent colB, MTV? mtv, Vector2 pointOfCollision, int numberOfCollisionPoints)
         {
-            Vector2 otherVel = Vector2.Zero;
-            float otherMass = 1;
-            float otherInvMass = 0;
-            float otherInertia = 1;
-            float otherInvInertia = 0;
-            float otherAngularVelocity = 0;
-            Vector2 otherCenterOfMass = Vector2.Zero;
-            if (other.AttachedRigidBody(out var otherRig))
-            {
-                //TODO: Maybe get a mock rig in cases where other doesnt have one ??? or maybe just a passive rig...
-                otherAngularVelocity = otherRig.CurrentAngularVelocity;
-                otherVel = otherRig.CurrentVelocity;
-                otherMass = otherRig.Mass;
-                otherInvMass = otherRig.InvMass;
-                otherInertia = otherRig.Inertia;
-                otherInvInertia = otherRig.InvInertia;
-                otherCenterOfMass = otherRig.CenterOfMass;
-            }
+            colA.AttachedRigidBody(out var rig);
+            colB.AttachedRigidBody(out var otherRig);
 
             var normal = -mtv.Value.Axis;
             var body1Contact = (pointOfCollision - rig.CurrentPosition);
@@ -157,10 +143,10 @@ namespace MyGame.TestGame.Systems
 
             //var relativevelocity = otherVel + body2Contact.Cross(otherAngularVelocity) - 
             //    rig.CurrentVelocity - body1Contact.Cross(rig.CurrentAngularVelocity);
-            var relativevelocity = otherVel -
+            var relativevelocity = otherRig.CurrentVelocity -
                 rig.CurrentVelocity;
             var velocityAlongNormal = Vector2.Dot(relativevelocity, normal);
-            if (velocityAlongNormal < 5f) //TODO: Find a fitting constant here.
+            if (velocityAlongNormal < 10f) //TODO: Find a fitting constant here.
             {
                 return;
             }
@@ -172,11 +158,11 @@ namespace MyGame.TestGame.Systems
             var body2RadCrossN = body2Contact.Cross(normal);
 
             var body1Inertia = body1RadCrossN * body1RadCrossN * rig.InvInertia;
-            var body2Inertia = body2RadCrossN * body2RadCrossN * otherInvInertia;
+            var body2Inertia = body2RadCrossN * body2RadCrossN * otherRig.InvInertia;
 
             float jNormal = -(1f + fCr) * velocityAlongNormal;
 
-            jNormal /= (rig.InvMass + otherInvMass) + body1Inertia + body2Inertia;
+            jNormal /= (rig.InvMass + otherRig.InvMass) + body1Inertia + body2Inertia;
             jNormal /= numberOfCollisionPoints;
 
             //apply impulse..
@@ -188,7 +174,7 @@ namespace MyGame.TestGame.Systems
             var collisionTanget = normal.Cross(normal.Cross(relativevelocity)); // wonder bout order of operations???
             collisionTanget.Normalize();
             var Vrt = relativevelocity.Dot(collisionTanget);
-            if (Math.Abs(Vrt) > 0)
+            if (false && Math.Abs(Vrt) > 0)
             {
                 //apply friction
                 var mub = .001f; //Friction coefficient. TODO: Get this properly instead of this arbitraty value
@@ -198,22 +184,17 @@ namespace MyGame.TestGame.Systems
                 //IS THIS REALLY RIGHT??? anyway refactor heavly.
                 rig.CurrentVelocity -= newVel;
                 rig.CurrentAngularVelocity -= newAngle;
-                if (otherRig != null)
-                {
-                    otherRig.CurrentVelocity += newVel;
-                    otherRig.CurrentAngularVelocity += newAngle;
-                }
+                otherRig.CurrentVelocity += newVel;
+                otherRig.CurrentAngularVelocity += newAngle;
             }
             else
             {
                 rig.CurrentVelocity -= vel1;
                 rig.CurrentAngularVelocity -= angle;
-            }
-            if (otherRig != null)
-            {
                 otherRig.CurrentVelocity += impulse * otherRig.InvMass;
                 otherRig.CurrentAngularVelocity += otherRig.InvInertia * body2Contact.Cross(impulse);
             }
+
             
         }
 
@@ -244,10 +225,10 @@ namespace MyGame.TestGame.Systems
     }
     public struct Collision
     {
-        public RigidBodyComponent A { get; }
+        public ColliderBaseComponent A { get; }
         public ColliderBaseComponent B { get; }
         public MTV MTV { get; }
-        public Collision(RigidBodyComponent a, ColliderBaseComponent b, MTV mtv)
+        public Collision(ColliderBaseComponent a, ColliderBaseComponent b, MTV mtv)
         {
             A = a;
             B = b;

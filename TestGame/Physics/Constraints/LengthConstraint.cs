@@ -26,7 +26,7 @@ namespace MyGame.TestGame.Physics.Constraints
             var direction = ObjB.Entity.Transform.Position - ObjA.Entity.Transform.Position;
             var currentLength = direction.Length();
 
-            if (direction != Vector3.Zero)
+            if (direction != Vector2.Zero)
             {
                 direction.Normalize();
                 //half of the desired lenght

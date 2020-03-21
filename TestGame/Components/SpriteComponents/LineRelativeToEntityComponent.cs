@@ -23,7 +23,7 @@ namespace MyGame.TestGame.Components.SpriteComponents
             //drawFrom = Vector2.Transform(drawFrom, Entity.Rotation);
             var p1 = Vector2.Transform(point1, Entity.Transform.Rotation);
             var p2 = Vector2.Transform(point2, Entity.Transform.Rotation);
-            drawFrom = Entity.Transform.Position.ToVector2() + p1;//Entity.Position.ToVector2();
+            drawFrom = Entity.Transform.Position + p1;//Entity.Position.ToVector2();
             distance = Vector2.Distance(p2, p1);
             // calculate the angle between the two vectors
             angle = (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X);

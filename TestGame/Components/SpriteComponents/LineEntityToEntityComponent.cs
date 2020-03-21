@@ -13,8 +13,8 @@ namespace MyGame.TestGame.Components.SpriteComponents
 
         public override void CalculateLine(out Vector2 drawFrom, out float distance, out float angle)
         {
-            drawFrom = Entity.Transform.Position.ToVector2();
-            var point2 = toEntity.Transform.Position.ToVector2();
+            drawFrom = Entity.Transform.Position;
+            var point2 = toEntity.Transform.Position;
             distance = Vector2.Distance(drawFrom, point2);
             // calculate the angle between the two vectors
             angle = (float)Math.Atan2(point2.Y - drawFrom.Y, point2.X - drawFrom.X);

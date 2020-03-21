@@ -22,7 +22,7 @@ namespace MyGame.TestGame.Components.ColliderComponents
                 case PolygonCollider other:
                     var thisnormals = this.Normals(nextRotation);
                     var thatNormals = collider.Normals(collider.Entity.Transform.Rotation);
-                    var thatPos = other.Entity.Transform.Position.ToVector2();
+                    var thatPos = other.Entity.Transform.Position;
                     for (int i = 0; i < thisnormals.Length; i++)
                     {
                         if (!CollisionOnAxis(this.Vertices(nextPosition,nextRotation), other.Vertices(thatPos, other.Entity.Transform.Rotation), thisnormals[i]))
@@ -45,14 +45,14 @@ namespace MyGame.TestGame.Components.ColliderComponents
                     point = new MTV();
                     break;
                 case BoxCollider other:
-                    colliding = other.CollisionBoxToPolygon(this, other, nextPosition, nextRotation, other.Entity.Transform.Position.ToVector2(), other.Entity.Transform.Rotation, out point);
+                    colliding = other.CollisionBoxToPolygon(this, other, nextPosition, nextRotation, other.Entity.Transform.Position, other.Entity.Transform.Rotation, out point);
                     break;
             }
             if (colliding)
             {
                 //TODO: refactor this bad shiet.
                 var delta = collider.Entity.Transform.Position - this.Entity.Transform.Position;
-                var dot = Vector2.Dot(point.Value.Axis, delta.ToVector2());
+                var dot = Vector2.Dot(point.Value.Axis, delta);
                 point = new MTV(point.Value.Axis * Math.Sign(dot), point.Value.Magnitude);
             }
             return colliding;

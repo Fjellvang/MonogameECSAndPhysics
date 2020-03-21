@@ -12,7 +12,7 @@ namespace MyGame.ECS.Entities
         //public Matrix Rotation { get; set; }
         public Transform Transform { get; set; }
 
-        public Entity(IManager manager, Vector3 position, float rotation = 0)
+        public Entity(IManager manager, Vector2 position, float rotation = 0)
         {
             this.manager = manager;
             var rotationMatrix = Matrix.CreateRotationZ(rotation);
@@ -56,7 +56,7 @@ namespace MyGame.ECS.Entities
     }
     public class Transform
     {
-        public Vector3 Position { get; set; } //TODO: In the future this could be a matrix with pos, scale and rot ?..
+        public Vector2 Position { get; set; } //TODO: In the future this could be a matrix with pos, scale and rot ?..
         public Matrix Rotation { get;
             set; }
         public Guid Id { get; set; }

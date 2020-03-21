@@ -44,7 +44,7 @@ namespace MyGame.TestGame.Physics.ForceGenerators
 
         public void ApplyForce(RigidBodyComponent simulationObject)
         {
-            var direction = (SimulationObjectA.Entity.Transform.Position - SimulationObjectB.Entity.Transform.Position).ToVector2();
+            var direction = (SimulationObjectA.Entity.Transform.Position - SimulationObjectB.Entity.Transform.Position);
             if (direction != Vector2.Zero)
             {
                 var currentLength = direction.Length();

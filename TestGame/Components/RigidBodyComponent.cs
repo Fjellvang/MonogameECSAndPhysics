@@ -39,13 +39,13 @@ namespace MyGame.TestGame.Components
         public RigidBodyComponent(IEntity entity, float mass, float inertia, Vector2 center, SimulationObjectType objectType, ColliderBaseComponent collider) : base(entity)
         {
             this.Mass = mass;
-            this.InvMass = 1 / mass;
+            this.InvMass = objectType == SimulationObjectType.Passive ? 0 : 1 / mass;
             this.Inertia = inertia;
-            this.InvInertia = 1 / inertia;
+            this.InvInertia = objectType == SimulationObjectType.Passive ? 0 : 1 / inertia;
             this.ObjectType = objectType;
             Collider = collider;
-            CurrentPosition = entity.Transform.Position.ToVector2();
-            PreviousPosition = entity.Transform.Position.ToVector2();
+            CurrentPosition = entity.Transform.Position;
+            PreviousPosition = entity.Transform.Position;
             CurrentVelocity = Vector2.Zero;
             this.CenterOfMass = center;
             collider.AttachRigidBody(this);
@@ -59,7 +59,7 @@ namespace MyGame.TestGame.Components
         }
         public void UpdateEntityPosition()
         {
-            this.Entity.Transform.Position = new Vector3(CurrentPosition, 0);
+            this.Entity.Transform.Position = CurrentPosition;
             this.Entity.Transform.Rotation = Matrix.CreateRotationZ(CurrentAngle);
         }
         public void AddRelativeForce(Vector2 force)

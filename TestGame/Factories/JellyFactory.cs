@@ -12,7 +12,7 @@ namespace MyGame.TestGame.Factories
 {
     public static class JellyFactory
     {
-        public static IEntity CreateControllableTriangle(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        public static IEntity CreateControllableTriangle(Vector2 center, IManager manager, float scale = 1, Color color = default)
         {
             var entity = new Entity(manager, center);
 
@@ -28,7 +28,7 @@ namespace MyGame.TestGame.Factories
             new RigidBodyComponent(entity, 1, 200,((top + downLeft + downRight) / 2).ToVector2(), SimulationObjectType.Active, col);
             return entity;
         }
-        public static IEntity CreateControllableCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        public static IEntity CreateControllableCube(Vector2 center, IManager manager, float scale = 1, Color color = default)
         {
             var entity = new Entity(manager, center);
             var width = Vector3.Right * scale;
@@ -49,7 +49,7 @@ namespace MyGame.TestGame.Factories
             new RigidBodyComponent(entity, 20, 20000, new Vector2((width.X + height.X) /2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
             return entity;
         }
-        public static IEntity CreateNonCollidingCube(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        public static IEntity CreateNonCollidingCube(Vector2 center, IManager manager, float scale = 1, Color color = default)
         {
             var entity = new Entity(manager, center);
             var width = Vector3.Right * scale;
@@ -63,7 +63,7 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, height.ToVector2() - half, Vector2.Zero - half, color);
             return entity;
         }
-        public static IEntity CreateCube(Vector3 center, IManager manager, float scale = 1, Color color = default, bool rig = true, float rotation = 0)
+        public static IEntity CreateCube(Vector2 center, IManager manager, float scale = 1, Color color = default, bool rig = true, float rotation = 0)
         {
             var entity = new Entity(manager, center, rotation);
             var width = Vector3.Right * scale;
@@ -81,11 +81,14 @@ namespace MyGame.TestGame.Factories
             if (rig)
             {
                 new RigidBodyComponent(entity, 200, 20000, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Active, col);
-
-            }      
+            }
+            else
+            {
+                new RigidBodyComponent(entity, 0, 0, new Vector2((width.X + height.X) / 2, (width.Y + height.Y) / 2), SimulationObjectType.Passive, col);
+            }
             return entity;
         }
-        public static IEntity CreateRandomShape(Vector3 center, IManager manager, float scale = 1, Color color = default)
+        public static IEntity CreateRandomShape(Vector2 center, IManager manager, float scale = 1, Color color = default)
         {
             var entity = new Entity(manager, center);
             var width = Vector2.UnitX * scale;
@@ -105,7 +108,7 @@ namespace MyGame.TestGame.Factories
             new LineRelativeToEntityComponent(entity, first, Vector2.Zero, color);
             return entity;
         }
-        public static IEntity CreateControllabelJellyCube(Vector3 centerPos, IManager gameManager, float width = 320)
+        public static IEntity CreateControllabelJellyCube(Vector2 centerPos, IManager gameManager, float width = 320)
         {
 
             var StationaryBall = new Entity(gameManager, centerPos);
@@ -116,25 +119,25 @@ namespace MyGame.TestGame.Factories
 
 
             var dist = width;
-            var southballPos = centerPos + -Vector3.Down * dist;
+            var southballPos = centerPos + Vector2.UnitY * dist;
             var southBall = new Entity(gameManager, southballPos) ;
             //new SpriteComponent(southBall, "ball", 1, Color.Red, Vector2.One * 1f);
             //new BoxColliderComponent(southBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(southBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
-            var eastBallPos = centerPos + Vector3.Right * dist;
+            var eastBallPos = centerPos + Vector2.UnitX * dist;
             var eastBall = new Entity(gameManager,eastBallPos);
             //new SpriteComponent(eastBall, "ball", 1, Color.Red, Vector2.One * 1f);
             //new BoxColliderComponent(eastBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(eastBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
-            var westBallPos = centerPos + Vector3.Right * -dist;
+            var westBallPos = centerPos + Vector2.UnitX * -dist;
             var westBall = new Entity(gameManager, westBallPos);
             //new SpriteComponent(westBall, "ball", 1, Color.Red, Vector2.One * 1f);
             //new BoxColliderComponent(westBall, new Rectangle(0, 0, 68, 68));
             new RigidBodyComponent(westBall, 5f, 200, Vector2.Zero, SimulationObjectType.Active, null);
 
-            var northBallPos = centerPos + Vector3.Down * dist;
+            var northBallPos = centerPos + -Vector2.UnitY * dist;
             var northBall = new Entity(gameManager, northBallPos);
             //new SpriteComponent(northBall, "ball",1,Color.Red,Vector2.One*1f);
             //new BoxColliderComponent(northBall, new Rectangle(0, 0, 68, 68));

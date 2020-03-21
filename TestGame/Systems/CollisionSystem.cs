@@ -30,7 +30,7 @@ namespace MyGame.TestGame.Systems
                     {
                         continue;
                     }
-                    collider.CollidesWith(collider.Entity.Transform.Position.ToVector2(), collider.Entity.Transform.Rotation, other, out _);
+                    collider.CollidesWith(collider.Entity.Transform.Position, collider.Entity.Transform.Rotation, other, out _);
                 }
             }
             base.Update(gameTime);
